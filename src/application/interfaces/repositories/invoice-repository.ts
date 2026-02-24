@@ -1,6 +1,7 @@
 import type { Invoice } from "@/domain/entities/invoice.entity";
+import type { InvoicesQuery } from "@/domain/value-objects";
 
 export interface InvoiceRepository {
-  findAll(clientNumber?: string): Promise<Invoice[]>;
+  findAll(query: InvoicesQuery): Promise<Invoice[]>;
   save(invoice: Invoice): Promise<Invoice>;
 }

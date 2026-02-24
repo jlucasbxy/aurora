@@ -1,6 +1,6 @@
-import type { InvoiceDto } from "@/application/dtos";
+import type { InvoiceDto, QueryInvoiceDto } from "@/application/dtos";
 
 export interface InvoiceService {
-  getAll(clientNumber?: string): Promise<InvoiceDto[]>;
+  getAll(dto: QueryInvoiceDto): Promise<InvoiceDto[]>;
   processAndSave(pdfBuffer: Buffer): Promise<InvoiceDto>;
 }

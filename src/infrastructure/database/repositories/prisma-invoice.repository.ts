@@ -1,14 +1,18 @@
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import { Invoice } from "@/domain/entities/invoice.entity";
+import type { InvoicesQuery } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
 export class PrismaInvoiceRepository implements InvoiceRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findAll(clientNumber?: string): Promise<Invoice[]> {
+  async findAll(query: InvoicesQuery): Promise<Invoice[]> {
     const rows = await this.prisma.invoice.findMany({
-      where: clientNumber ? { clientNumber } : undefined,
+      where: {
+        ...(query.clientNumber && { clientNumber: query.clientNumber }),
+        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
+      },
       orderBy: { id: "desc" }
     });
 
