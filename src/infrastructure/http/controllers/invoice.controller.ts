@@ -1,12 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ErrorCode } from "@/application/dtos";
-import type { ExtractInvoiceDataUseCase } from "@/application/use-cases";
+import type { InvoiceService } from "@/application/interfaces/services";
 import { DomainError } from "@/domain/errors";
 
 export class InvoiceController {
-  constructor(
-    private readonly extractInvoiceDataUseCase: ExtractInvoiceDataUseCase
-  ) {}
+  constructor(private readonly invoiceService: InvoiceService) {}
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
@@ -24,7 +22,7 @@ export class InvoiceController {
     }
     const buffer = Buffer.concat(chunks);
 
-    const result = await this.extractInvoiceDataUseCase.execute(buffer);
+    const result = await this.invoiceService.extractData(buffer);
     return reply.status(200).send(result);
   }
 }
