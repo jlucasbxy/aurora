@@ -1,5 +1,5 @@
 import { Invoice } from "@/domain/entities/invoice.entity";
-import { Quantity, Money } from "@/domain/value-objects";
+import { Quantity, Money, ClientNumber } from "@/domain/value-objects";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import type { ProcessedInvoiceData } from "@/application/use-cases/process-invoice-data.use-case";
 
@@ -8,7 +8,7 @@ export class SaveInvoiceUseCase {
 
   execute(data: ProcessedInvoiceData): Promise<Invoice> {
     const invoice = Invoice.create({
-      numeroCliente: data.numeroCliente,
+      numeroCliente: ClientNumber.create(data.numeroCliente),
       mesReferencia: data.mesReferencia,
       energiaEletricaQtd: Quantity.create(data.energiaEletricaQtd),
       energiaEletricaValor: Money.create(data.energiaEletricaValor),
