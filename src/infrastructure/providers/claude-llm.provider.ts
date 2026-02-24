@@ -1,9 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { env } from "@/infrastructure/config/env.config";
-import type {
-  InvoiceExtractionResult,
-  LLMProvider
-} from "@/application/interfaces/providers";
+import type { InvoiceExtractionDto } from "@/application/dtos";
+import type { LLMProvider } from "@/application/interfaces/providers";
 
 const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF and return them as a JSON object with no additional text or markdown.
 
@@ -24,7 +22,7 @@ export class ClaudeLLMProvider implements LLMProvider {
     this.client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
   }
 
-  async extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionResult> {
+  async extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionDto> {
     const base64Pdf = pdfBuffer.toString("base64");
 
     const response = await this.client.messages.create({
@@ -53,6 +51,6 @@ export class ClaudeLLMProvider implements LLMProvider {
 
     const raw = (response.content[0] as { type: string; text: string }).text;
     const text = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
-    return JSON.parse(text) as InvoiceExtractionResult;
+    return JSON.parse(text) as InvoiceExtractionDto;
   }
 }

@@ -1,4 +1,4 @@
-import type { InvoiceExtractionResult } from "@/application/interfaces/providers";
+import type { InvoiceExtractionDto } from "@/application/dtos";
 
 export type ProcessedInvoiceData = {
   clientNumber: string;
@@ -17,7 +17,7 @@ export type ProcessedInvoiceData = {
 };
 
 export class ProcessInvoiceDataUseCase {
-  execute(result: InvoiceExtractionResult): ProcessedInvoiceData {
+  execute(result: InvoiceExtractionDto): ProcessedInvoiceData {
     return {
       clientNumber: result.clientNumber,
       referenceMonth: result.referenceMonth,

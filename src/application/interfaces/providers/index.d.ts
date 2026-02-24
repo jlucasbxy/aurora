@@ -9,7 +9,4 @@ export type {
   TransactionRepositories
 } from "@/application/interfaces/providers/transaction-manager";
 export type { StorageProvider } from "@/application/interfaces/providers/storage-provider";
-export type {
-  LLMProvider,
-  InvoiceExtractionResult
-} from "@/application/interfaces/providers/llm-provider";
+export type { LLMProvider } from "@/application/interfaces/providers/llm-provider";

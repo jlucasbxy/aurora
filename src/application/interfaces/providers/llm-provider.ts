@@ -1,12 +1,5 @@
-export type InvoiceExtractionResult = {
-  clientNumber: string;
-  referenceMonth: string;
-  electricEnergy: { qty: number; value: number };
-  sceeEnergy: { qty: number; value: number };
-  compensatedEnergyGDI: { qty: number; value: number };
-  publicLightingContrib: { value: number };
-};
+import type { InvoiceExtractionDto } from "@/application/dtos";
 
 export interface LLMProvider {
-  extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionResult>;
+  extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionDto>;
 }
