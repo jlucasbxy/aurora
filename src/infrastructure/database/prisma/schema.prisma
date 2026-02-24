@@ -30,6 +30,6 @@ model Invoice {
   gdSavings                 Decimal
   createdAt                 DateTime
 
-  @@index([clientNumber])
+  @@index([clientNumber, referenceMonth])
   @@index([referenceMonth])
 }
