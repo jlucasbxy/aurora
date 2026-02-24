@@ -1,1 +1,3 @@
-export const ROUTE_PREFIXES = {} as const;
+export const ROUTE_PREFIXES = {
+  INVOICES: "/invoices"
+} as const;

@@ -14,8 +14,10 @@
     "check:fix": "biome check --write ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@biomejs/biome": "^2.4.4",
     "@fastify/cookie": "^11.0.2",
+    "@fastify/multipart": "^9.4.0",
     "@fastify/rate-limit": "^10.3.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
