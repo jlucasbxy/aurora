@@ -6,9 +6,8 @@
       "!**/dist",
       "!**/node_modules",
       "!*.generated.*",
-      "!apps/backend/src/infrastructure/database/prisma",
-      "!package-lock.json",
-      "!**/.turbo"
+      "!src/infrastructure/database/prisma",
+      "!package-lock.json"
     ]
   },
   "formatter": {
@@ -62,16 +61,5 @@
       }
     }
   },
-  "overrides": [
-    {
-      "includes": ["packages/**"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": "off"
-          }
-        }
-      }
-    }
-  ]
+  "overrides": []
 }
