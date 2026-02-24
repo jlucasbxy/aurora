@@ -1,4 +1,4 @@
-import type { InvoiceDto, QueryInvoiceDto } from "@/application/dtos";
+import type { InvoiceDto, PaginatedResult, QueryInvoiceDto } from "@/application/dtos";
 import type { InvoiceService } from "@/application/interfaces/services";
 import type {
   ExtractInvoiceDataUseCase,
@@ -15,7 +15,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     private readonly saveInvoiceUseCase: SaveInvoiceUseCase
   ) {}
 
-  getAll(dto: QueryInvoiceDto): Promise<InvoiceDto[]> {
+  getAll(dto: QueryInvoiceDto): Promise<PaginatedResult<InvoiceDto>> {
     return this.getInvoicesUseCase.execute(dto);
   }
 

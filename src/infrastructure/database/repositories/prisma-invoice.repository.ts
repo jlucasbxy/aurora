@@ -13,7 +13,9 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
         ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
       },
-      orderBy: { id: "desc" }
+      orderBy: { id: "desc" },
+      ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
+      take: query.limit + 1
     });
 
     return rows.map((row) => PrismaInvoiceMapper.toDomain(row));

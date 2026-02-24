@@ -7,15 +7,19 @@ export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
   async list(request: FastifyRequest, reply: FastifyReply) {
-    const { clientNumber, referenceMonth } = request.query as {
+    const { clientNumber, referenceMonth, cursor, limit } = request.query as {
       clientNumber?: string;
       referenceMonth?: string;
+      cursor?: string;
+      limit?: string;
     };
-    const invoices = await this.invoiceService.getAll({
+    const result = await this.invoiceService.getAll({
       clientNumber,
-      referenceMonth
+      referenceMonth,
+      cursor,
+      limit
     });
-    return reply.status(200).send(invoices);
+    return reply.status(200).send(result);
   }
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
