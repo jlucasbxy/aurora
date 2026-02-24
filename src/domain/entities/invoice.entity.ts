@@ -39,9 +39,9 @@ export class Invoice {
   readonly gdSavings: Money;
   readonly createdAt: Date;
 
-  private constructor(props: InvoiceProps) {
-    this.id = uuidv7();
-    this.createdAt = new Date();
+  private constructor(props: InvoiceProps, id?: string, createdAt?: Date) {
+    this.id = id ?? uuidv7();
+    this.createdAt = createdAt ?? new Date();
     this.clientNumber = props.clientNumber;
     this.referenceMonth = props.referenceMonth;
     this.electricEnergyQty = props.electricEnergyQty;
@@ -59,5 +59,9 @@ export class Invoice {
 
   static create(props: InvoiceProps): Invoice {
     return new Invoice(props);
+  }
+
+  static reconstitute(id: string, createdAt: Date, props: InvoiceProps): Invoice {
+    return new Invoice(props, id, createdAt);
   }
 }

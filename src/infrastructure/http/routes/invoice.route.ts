@@ -6,6 +6,10 @@ export function registerInvoiceRoutes(
   app: FastifyInstance,
   controller: InvoiceController
 ) {
+  app.get(`${ROUTE_PREFIXES.INVOICES}`, (req, reply) =>
+    controller.list(req, reply)
+  );
+
   app.post(`${ROUTE_PREFIXES.INVOICES}/upload`, (req, reply) =>
     controller.upload(req, reply)
   );

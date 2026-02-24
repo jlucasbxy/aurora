@@ -6,6 +6,12 @@ import { DomainError } from "@/domain/errors";
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
+  async list(request: FastifyRequest, reply: FastifyReply) {
+    const { clientNumber } = request.query as { clientNumber?: string };
+    const invoices = await this.invoiceService.getAll(clientNumber);
+    return reply.status(200).send(invoices);
+  }
+
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
 

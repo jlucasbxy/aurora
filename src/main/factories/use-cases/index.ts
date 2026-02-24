@@ -1,5 +1,6 @@
 import {
   ExtractInvoiceDataUseCase,
+  GetInvoicesUseCase,
   ProcessInvoiceDataUseCase,
   SaveInvoiceUseCase
 } from "@/application/use-cases";
@@ -9,6 +10,10 @@ import { singleton } from "@/main/factories/singleton.util";
 
 export const makeExtractInvoiceDataUseCase = singleton(
   () => new ExtractInvoiceDataUseCase(makeClaudeLLMProvider())
+);
+
+export const makeGetInvoicesUseCase = singleton(
+  () => new GetInvoicesUseCase(makeInvoiceRepository())
 );
 
 export const makeProcessInvoiceDataUseCase = singleton(
