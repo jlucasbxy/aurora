@@ -12,3 +12,24 @@ generator client {
 datasource db {
   provider   = "postgresql"
 }
+
+model Invoice {
+  id                          String   @id
+  numeroCliente               String
+  mesReferencia               String
+  energiaEletricaQtd          Int
+  energiaEletricaValor        Decimal
+  energiaSCEEsICMSQtd         Int
+  energiaSCEEsICMSValor       Decimal
+  energiaCompensadaGDIQtd     Int
+  energiaCompensadaGDIValor   Decimal
+  contribIlumPublicaMunicipal Decimal
+  consumoEnergiaEletrica      Int
+  energiaCompensada           Int
+  valorTotalSemGD             Decimal
+  economiaGD                  Decimal
+  createdAt                   DateTime
+
+  @@index([numeroCliente])
+  @@index([mesReferencia])
+}

@@ -22,7 +22,7 @@ export class InvoiceController {
     }
     const buffer = Buffer.concat(chunks);
 
-    const result = await this.invoiceService.extractData(buffer);
-    return reply.status(200).send(result);
+    const invoice = await this.invoiceService.processAndSave(buffer);
+    return reply.status(201).send(invoice);
   }
 }

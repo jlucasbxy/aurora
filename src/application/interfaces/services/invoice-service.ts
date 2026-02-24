@@ -1,5 +1,5 @@
-import type { InvoiceExtractionResult } from "@/application/interfaces/providers";
+import type { Invoice } from "@/domain/entities/invoice.entity";
 
 export interface InvoiceService {
-  extractData(pdfBuffer: Buffer): Promise<InvoiceExtractionResult>;
+  processAndSave(pdfBuffer: Buffer): Promise<Invoice>;
 }
