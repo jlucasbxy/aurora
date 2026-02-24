@@ -9,7 +9,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
   async findAll(clientNumber?: string): Promise<Invoice[]> {
     const rows = await this.prisma.invoice.findMany({
       where: clientNumber ? { clientNumber } : undefined,
-      orderBy: { createdAt: "desc" }
+      orderBy: { id: "desc" }
     });
 
     return rows.map((row) => PrismaInvoiceMapper.toDomain(row));
