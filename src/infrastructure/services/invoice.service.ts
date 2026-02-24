@@ -1,3 +1,4 @@
+import type { InvoiceDto } from "@/application/dtos";
 import type { InvoiceService } from "@/application/interfaces/services";
 import type {
   ExtractInvoiceDataUseCase,
@@ -5,7 +6,6 @@ import type {
   ProcessInvoiceDataUseCase,
   SaveInvoiceUseCase
 } from "@/application/use-cases";
-import type { Invoice } from "@/domain/entities/invoice.entity";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(
@@ -15,11 +15,11 @@ export class InvoiceServiceImpl implements InvoiceService {
     private readonly saveInvoiceUseCase: SaveInvoiceUseCase
   ) {}
 
-  getAll(clientNumber?: string): Promise<Invoice[]> {
+  getAll(clientNumber?: string): Promise<InvoiceDto[]> {
     return this.getInvoicesUseCase.execute(clientNumber);
   }
 
-  async processAndSave(pdfBuffer: Buffer): Promise<Invoice> {
+  async processAndSave(pdfBuffer: Buffer): Promise<InvoiceDto> {
     const extracted = await this.extractInvoiceDataUseCase.execute(pdfBuffer);
     const processed = this.processInvoiceDataUseCase.execute(extracted);
     return this.saveInvoiceUseCase.execute(processed);

@@ -1,4 +1,6 @@
+import type { InvoiceDto } from "@/application/dtos";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
+import { InvoiceMapper } from "@/application/mappers";
 import type { ProcessedInvoiceData } from "@/application/use-cases/process-invoice-data.use-case";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
@@ -11,7 +13,7 @@ import {
 export class SaveInvoiceUseCase {
   constructor(private readonly invoiceRepository: InvoiceRepository) {}
 
-  execute(data: ProcessedInvoiceData): Promise<Invoice> {
+  async execute(data: ProcessedInvoiceData): Promise<InvoiceDto> {
     const invoice = Invoice.create({
       clientNumber: ClientNumber.create(data.clientNumber),
       referenceMonth: ReferenceMonth.create(data.referenceMonth),
@@ -30,6 +32,7 @@ export class SaveInvoiceUseCase {
       gdSavings: Money.create(data.gdSavings)
     });
 
-    return this.invoiceRepository.save(invoice);
+    const saved = await this.invoiceRepository.save(invoice);
+    return InvoiceMapper.toDto(saved);
   }
 }
