@@ -1,4 +1,4 @@
-import { ErrorCode } from "@/application/dtos";
+import { ErrorCode } from "@/domain/enums";
 import { DomainError } from "@/domain/errors";
 import { referenceMonthSchema as schema } from "@/shared/schemas";
 

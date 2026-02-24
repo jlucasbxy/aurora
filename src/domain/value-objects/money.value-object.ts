@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ErrorCode } from "@/application/dtos";
+import { ErrorCode } from "@/domain/enums";
 import { DomainError } from "@/domain/errors";
 
 const schema = z.number().finite();
