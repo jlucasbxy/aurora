@@ -8,12 +8,12 @@ import type {
 const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF and return them as a JSON object with no additional text or markdown.
 
 Required fields:
-- numeroCliente: the customer number (string)
-- mesReferencia: the reference month in format "MMM/YYYY" e.g. "SET/2024" (string)
-- energiaEletrica: object with "quantidade" (kWh, number) and "valor" (BRL, number)
-- energiaSCEEsICMS: object with "quantidade" (kWh, number) and "valor" (BRL, number)
-- energiaCompensadaGDI: object with "quantidade" (kWh, number) and "valor" (BRL, number, typically negative)
-- contribIlumPublicaMunicipal: object with "valor" (BRL, number)
+- clientNumber: the customer number (string)
+- referenceMonth: the reference month in format "MMM/YYYY" e.g. "SET/2024" (string)
+- electricEnergy: object with "qty" (kWh, number) and "value" (BRL, number)
+- sceeEnergy: object with "qty" (kWh, number) and "value" (BRL, number)
+- compensatedEnergyGDI: object with "qty" (kWh, number) and "value" (BRL, number, typically negative)
+- publicLightingContrib: object with "value" (BRL, number)
 
 Return only valid JSON, no explanation.`;
 

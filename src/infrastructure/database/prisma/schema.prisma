@@ -14,22 +14,22 @@ datasource db {
 }
 
 model Invoice {
-  id                          String   @id
-  numeroCliente               String
-  mesReferencia               String
-  energiaEletricaQtd          Int
-  energiaEletricaValor        Decimal
-  energiaSCEEsICMSQtd         Int
-  energiaSCEEsICMSValor       Decimal
-  energiaCompensadaGDIQtd     Int
-  energiaCompensadaGDIValor   Decimal
-  contribIlumPublicaMunicipal Decimal
-  consumoEnergiaEletrica      Int
-  energiaCompensada           Int
-  valorTotalSemGD             Decimal
-  economiaGD                  Decimal
-  createdAt                   DateTime
+  id                        String   @id
+  clientNumber              String
+  referenceMonth            String
+  electricEnergyQty         Int
+  electricEnergyValue       Decimal
+  sceeEnergyQty             Int
+  sceeEnergyValue           Decimal
+  compensatedEnergyQty      Int
+  compensatedEnergyValue    Decimal
+  publicLightingContrib     Decimal
+  electricEnergyConsumption Int
+  compensatedEnergy         Int
+  totalValueWithoutGD       Decimal
+  gdSavings                 Decimal
+  createdAt                 DateTime
 
-  @@index([numeroCliente])
-  @@index([mesReferencia])
+  @@index([clientNumber])
+  @@index([referenceMonth])
 }

@@ -1,10 +1,10 @@
 export type InvoiceExtractionResult = {
-  numeroCliente: string;
-  mesReferencia: string;
-  energiaEletrica: { quantidade: number; valor: number };
-  energiaSCEEsICMS: { quantidade: number; valor: number };
-  energiaCompensadaGDI: { quantidade: number; valor: number };
-  contribIlumPublicaMunicipal: { valor: number };
+  clientNumber: string;
+  referenceMonth: string;
+  electricEnergy: { qty: number; value: number };
+  sceeEnergy: { qty: number; value: number };
+  compensatedEnergyGDI: { qty: number; value: number };
+  publicLightingContrib: { value: number };
 };
 
 export interface LLMProvider {

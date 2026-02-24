@@ -9,19 +9,19 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     await this.prisma.invoice.create({
       data: {
         id: invoice.id,
-        numeroCliente: invoice.numeroCliente.getValue(),
-        mesReferencia: invoice.mesReferencia.getValue(),
-        energiaEletricaQtd: invoice.energiaEletricaQtd.getValue(),
-        energiaEletricaValor: invoice.energiaEletricaValor.getValue(),
-        energiaSCEEsICMSQtd: invoice.energiaSCEEsICMSQtd.getValue(),
-        energiaSCEEsICMSValor: invoice.energiaSCEEsICMSValor.getValue(),
-        energiaCompensadaGDIQtd: invoice.energiaCompensadaGDIQtd.getValue(),
-        energiaCompensadaGDIValor: invoice.energiaCompensadaGDIValor.getValue(),
-        contribIlumPublicaMunicipal: invoice.contribIlumPublicaMunicipal.getValue(),
-        consumoEnergiaEletrica: invoice.consumoEnergiaEletrica.getValue(),
-        energiaCompensada: invoice.energiaCompensada.getValue(),
-        valorTotalSemGD: invoice.valorTotalSemGD.getValue(),
-        economiaGD: invoice.economiaGD.getValue(),
+        clientNumber: invoice.clientNumber.getValue(),
+        referenceMonth: invoice.referenceMonth.getValue(),
+        electricEnergyQty: invoice.electricEnergyQty.getValue(),
+        electricEnergyValue: invoice.electricEnergyValue.getValue(),
+        sceeEnergyQty: invoice.sceeEnergyQty.getValue(),
+        sceeEnergyValue: invoice.sceeEnergyValue.getValue(),
+        compensatedEnergyQty: invoice.compensatedEnergyQty.getValue(),
+        compensatedEnergyValue: invoice.compensatedEnergyValue.getValue(),
+        publicLightingContrib: invoice.publicLightingContrib.getValue(),
+        electricEnergyConsumption: invoice.electricEnergyConsumption.getValue(),
+        compensatedEnergy: invoice.compensatedEnergy.getValue(),
+        totalValueWithoutGD: invoice.totalValueWithoutGD.getValue(),
+        gdSavings: invoice.gdSavings.getValue(),
         createdAt: invoice.createdAt
       }
     });

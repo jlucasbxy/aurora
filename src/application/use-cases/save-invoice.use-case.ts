@@ -8,19 +8,19 @@ export class SaveInvoiceUseCase {
 
   execute(data: ProcessedInvoiceData): Promise<Invoice> {
     const invoice = Invoice.create({
-      numeroCliente: ClientNumber.create(data.numeroCliente),
-      mesReferencia: ReferenceMonth.create(data.mesReferencia),
-      energiaEletricaQtd: Quantity.create(data.energiaEletricaQtd),
-      energiaEletricaValor: Money.create(data.energiaEletricaValor),
-      energiaSCEEsICMSQtd: Quantity.create(data.energiaSCEEsICMSQtd),
-      energiaSCEEsICMSValor: Money.create(data.energiaSCEEsICMSValor),
-      energiaCompensadaGDIQtd: Quantity.create(data.energiaCompensadaGDIQtd),
-      energiaCompensadaGDIValor: Money.create(data.energiaCompensadaGDIValor),
-      contribIlumPublicaMunicipal: Money.create(data.contribIlumPublicaMunicipal),
-      consumoEnergiaEletrica: Quantity.create(data.consumoEnergiaEletrica),
-      energiaCompensada: Quantity.create(data.energiaCompensada),
-      valorTotalSemGD: Money.create(data.valorTotalSemGD),
-      economiaGD: Money.create(data.economiaGD)
+      clientNumber: ClientNumber.create(data.clientNumber),
+      referenceMonth: ReferenceMonth.create(data.referenceMonth),
+      electricEnergyQty: Quantity.create(data.electricEnergyQty),
+      electricEnergyValue: Money.create(data.electricEnergyValue),
+      sceeEnergyQty: Quantity.create(data.sceeEnergyQty),
+      sceeEnergyValue: Money.create(data.sceeEnergyValue),
+      compensatedEnergyQty: Quantity.create(data.compensatedEnergyQty),
+      compensatedEnergyValue: Money.create(data.compensatedEnergyValue),
+      publicLightingContrib: Money.create(data.publicLightingContrib),
+      electricEnergyConsumption: Quantity.create(data.electricEnergyConsumption),
+      compensatedEnergy: Quantity.create(data.compensatedEnergy),
+      totalValueWithoutGD: Money.create(data.totalValueWithoutGD),
+      gdSavings: Money.create(data.gdSavings)
     });
 
     return this.invoiceRepository.save(invoice);

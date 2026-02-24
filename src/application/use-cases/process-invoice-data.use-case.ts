@@ -1,44 +1,42 @@
 import type { InvoiceExtractionResult } from "@/application/interfaces/providers";
 
 export type ProcessedInvoiceData = {
-  numeroCliente: string;
-  mesReferencia: string;
-  energiaEletricaQtd: number;
-  energiaEletricaValor: number;
-  energiaSCEEsICMSQtd: number;
-  energiaSCEEsICMSValor: number;
-  energiaCompensadaGDIQtd: number;
-  energiaCompensadaGDIValor: number;
-  contribIlumPublicaMunicipal: number;
-  consumoEnergiaEletrica: number;
-  energiaCompensada: number;
-  valorTotalSemGD: number;
-  economiaGD: number;
+  clientNumber: string;
+  referenceMonth: string;
+  electricEnergyQty: number;
+  electricEnergyValue: number;
+  sceeEnergyQty: number;
+  sceeEnergyValue: number;
+  compensatedEnergyQty: number;
+  compensatedEnergyValue: number;
+  publicLightingContrib: number;
+  electricEnergyConsumption: number;
+  compensatedEnergy: number;
+  totalValueWithoutGD: number;
+  gdSavings: number;
 };
 
 export class ProcessInvoiceDataUseCase {
   execute(result: InvoiceExtractionResult): ProcessedInvoiceData {
     return {
-      numeroCliente: result.numeroCliente,
-      mesReferencia: result.mesReferencia,
-      energiaEletricaQtd: Math.round(result.energiaEletrica.quantidade),
-      energiaEletricaValor: result.energiaEletrica.valor,
-      energiaSCEEsICMSQtd: Math.round(result.energiaSCEEsICMS.quantidade),
-      energiaSCEEsICMSValor: result.energiaSCEEsICMS.valor,
-      energiaCompensadaGDIQtd: Math.round(
-        result.energiaCompensadaGDI.quantidade
+      clientNumber: result.clientNumber,
+      referenceMonth: result.referenceMonth,
+      electricEnergyQty: Math.round(result.electricEnergy.qty),
+      electricEnergyValue: result.electricEnergy.value,
+      sceeEnergyQty: Math.round(result.sceeEnergy.qty),
+      sceeEnergyValue: result.sceeEnergy.value,
+      compensatedEnergyQty: Math.round(result.compensatedEnergyGDI.qty),
+      compensatedEnergyValue: result.compensatedEnergyGDI.value,
+      publicLightingContrib: result.publicLightingContrib.value,
+      electricEnergyConsumption: Math.round(
+        result.electricEnergy.qty + result.sceeEnergy.qty
       ),
-      energiaCompensadaGDIValor: result.energiaCompensadaGDI.valor,
-      contribIlumPublicaMunicipal: result.contribIlumPublicaMunicipal.valor,
-      consumoEnergiaEletrica: Math.round(
-        result.energiaEletrica.quantidade + result.energiaSCEEsICMS.quantidade
-      ),
-      energiaCompensada: Math.round(result.energiaCompensadaGDI.quantidade),
-      valorTotalSemGD:
-        result.energiaEletrica.valor +
-        result.energiaSCEEsICMS.valor +
-        result.contribIlumPublicaMunicipal.valor,
-      economiaGD: result.energiaCompensadaGDI.valor
+      compensatedEnergy: Math.round(result.compensatedEnergyGDI.qty),
+      totalValueWithoutGD:
+        result.electricEnergy.value +
+        result.sceeEnergy.value +
+        result.publicLightingContrib.value,
+      gdSavings: result.compensatedEnergyGDI.value
     };
   }
 }
