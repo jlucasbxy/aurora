@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { DomainError } from "@/domain/errors";
 import { ErrorCode } from "@/application/dtos";
+import { DomainError } from "@/domain/errors";
 
-const schema = z.string().regex(/^\d{10}$/, "Client number must be exactly 10 digits");
+const schema = z
+  .string()
+  .regex(/^\d{10}$/, "Client number must be exactly 10 digits");
 
 export class ClientNumber {
   private readonly value: string;

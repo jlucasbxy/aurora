@@ -1,5 +1,5 @@
-import Fastify from "fastify";
 import fastifyMultipart from "@fastify/multipart";
+import Fastify from "fastify";
 import { env } from "@/infrastructure/config/env.config";
 import { errorHandler } from "@/infrastructure/http/middlewares";
 import { registerInvoiceRoutes } from "@/infrastructure/http/routes";

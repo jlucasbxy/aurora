@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import type { InvoiceController } from "@/infrastructure/http/controllers";
 import { ROUTE_PREFIXES } from "@/infrastructure/config/routes.config";
+import type { InvoiceController } from "@/infrastructure/http/controllers";
 
 export function registerInvoiceRoutes(
   app: FastifyInstance,

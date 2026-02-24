@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { env } from "@/infrastructure/config/env.config";
 import type { InvoiceExtractionDto } from "@/application/dtos";
 import type { LLMProvider } from "@/application/interfaces/providers";
+import { env } from "@/infrastructure/config/env.config";
 
 const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF and return them as a JSON object with no additional text or markdown.
 
@@ -50,7 +50,10 @@ export class ClaudeLLMProvider implements LLMProvider {
     });
 
     const raw = (response.content[0] as { type: string; text: string }).text;
-    const text = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
+    const text = raw
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```\s*$/, "")
+      .trim();
     return JSON.parse(text) as InvoiceExtractionDto;
   }
 }

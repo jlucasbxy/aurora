@@ -1,6 +1,6 @@
-import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import type { Invoice } from "@/domain/entities/invoice.entity";
+import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
 export class PrismaInvoiceRepository implements InvoiceRepository {
   constructor(private readonly prisma: PrismaClient) {}

@@ -1,10 +1,10 @@
 import { InvoiceServiceImpl } from "@/infrastructure/services";
+import { singleton } from "@/main/factories/singleton.util";
 import {
   makeExtractInvoiceDataUseCase,
   makeProcessInvoiceDataUseCase,
   makeSaveInvoiceUseCase
 } from "@/main/factories/use-cases";
-import { singleton } from "@/main/factories/singleton.util";
 
 export const makeInvoiceService = singleton(
   () =>

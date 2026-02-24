@@ -1,5 +1,10 @@
 import { uuidv7 } from "uuidv7";
-import { Quantity, Money, ClientNumber, ReferenceMonth } from "@/domain/value-objects";
+import type {
+  ClientNumber,
+  Money,
+  Quantity,
+  ReferenceMonth
+} from "@/domain/value-objects";
 
 interface InvoiceProps {
   clientNumber: ClientNumber;

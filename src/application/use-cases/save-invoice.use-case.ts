@@ -1,7 +1,12 @@
-import { Invoice } from "@/domain/entities/invoice.entity";
-import { Quantity, Money, ClientNumber, ReferenceMonth } from "@/domain/value-objects";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import type { ProcessedInvoiceData } from "@/application/use-cases/process-invoice-data.use-case";
+import { Invoice } from "@/domain/entities/invoice.entity";
+import {
+  ClientNumber,
+  Money,
+  Quantity,
+  ReferenceMonth
+} from "@/domain/value-objects";
 
 export class SaveInvoiceUseCase {
   constructor(private readonly invoiceRepository: InvoiceRepository) {}
@@ -17,7 +22,9 @@ export class SaveInvoiceUseCase {
       compensatedEnergyQty: Quantity.create(data.compensatedEnergyQty),
       compensatedEnergyValue: Money.create(data.compensatedEnergyValue),
       publicLightingContrib: Money.create(data.publicLightingContrib),
-      electricEnergyConsumption: Quantity.create(data.electricEnergyConsumption),
+      electricEnergyConsumption: Quantity.create(
+        data.electricEnergyConsumption
+      ),
       compensatedEnergy: Quantity.create(data.compensatedEnergy),
       totalValueWithoutGD: Money.create(data.totalValueWithoutGD),
       gdSavings: Money.create(data.gdSavings)

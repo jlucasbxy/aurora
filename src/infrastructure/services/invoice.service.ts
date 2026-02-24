@@ -1,8 +1,10 @@
 import type { InvoiceService } from "@/application/interfaces/services";
+import type {
+  ExtractInvoiceDataUseCase,
+  ProcessInvoiceDataUseCase,
+  SaveInvoiceUseCase
+} from "@/application/use-cases";
 import type { Invoice } from "@/domain/entities/invoice.entity";
-import type { ExtractInvoiceDataUseCase } from "@/application/use-cases";
-import type { ProcessInvoiceDataUseCase } from "@/application/use-cases";
-import type { SaveInvoiceUseCase } from "@/application/use-cases";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(
