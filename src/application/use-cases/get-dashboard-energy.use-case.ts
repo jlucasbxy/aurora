@@ -7,7 +7,7 @@ export class GetDashboardEnergyUseCase {
 
   async execute(dto: QueryDashboardDto): Promise<DashboardEnergyDto> {
     const query = DashboardQuery.create(dto);
-    const result = await this.invoiceRepository.aggregate(query);
+    const result = await this.invoiceRepository.aggregateEnergy(query);
     return {
       electricEnergyConsumption: result.electricEnergyConsumption,
       compensatedEnergy: result.compensatedEnergy

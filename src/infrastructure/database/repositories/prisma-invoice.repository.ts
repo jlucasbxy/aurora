@@ -1,5 +1,6 @@
 import type {
-  InvoiceAggregateResult,
+  InvoiceEnergyResult,
+  InvoiceFinancialResult,
   InvoiceRepository
 } from "@/application/interfaces/repositories/invoice-repository";
 import { Invoice } from "@/domain/entities/invoice.entity";
@@ -48,7 +49,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     return invoice;
   }
 
-  async aggregate(query: DashboardQuery): Promise<InvoiceAggregateResult> {
+  async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyResult> {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
@@ -56,14 +57,27 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       },
       _sum: {
         electricEnergyConsumption: true,
-        compensatedEnergy: true,
+        compensatedEnergy: true
+      }
+    });
+    return {
+      electricEnergyConsumption: Number(result._sum.electricEnergyConsumption ?? 0),
+      compensatedEnergy: Number(result._sum.compensatedEnergy ?? 0)
+    };
+  }
+
+  async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialResult> {
+    const result = await this.prisma.invoice.aggregate({
+      where: {
+        ...(query.clientNumber && { clientNumber: query.clientNumber }),
+        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
+      },
+      _sum: {
         totalValueWithoutGD: true,
         gdSavings: true
       }
     });
     return {
-      electricEnergyConsumption: Number(result._sum.electricEnergyConsumption ?? 0),
-      compensatedEnergy: Number(result._sum.compensatedEnergy ?? 0),
       totalValueWithoutGD: Number(result._sum.totalValueWithoutGD ?? 0),
       gdSavings: Number(result._sum.gdSavings ?? 0)
     };

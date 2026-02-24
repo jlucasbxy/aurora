@@ -7,7 +7,7 @@ export class GetDashboardFinancialUseCase {
 
   async execute(dto: QueryDashboardDto): Promise<DashboardFinancialDto> {
     const query = DashboardQuery.create(dto);
-    const result = await this.invoiceRepository.aggregate(query);
+    const result = await this.invoiceRepository.aggregateFinancial(query);
     return {
       totalValueWithoutGD: result.totalValueWithoutGD,
       gdSavings: result.gdSavings
