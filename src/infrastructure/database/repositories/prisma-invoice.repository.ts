@@ -1,34 +1,18 @@
-import type { InvoiceListItem } from "@/application/read-models";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
-import type { Invoice } from "@/domain/entities/invoice.entity";
+import { Invoice } from "@/domain/entities/invoice.entity";
+import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
 export class PrismaInvoiceRepository implements InvoiceRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findAll(clientNumber?: string): Promise<InvoiceListItem[]> {
+  async findAll(clientNumber?: string): Promise<Invoice[]> {
     const rows = await this.prisma.invoice.findMany({
       where: clientNumber ? { clientNumber } : undefined,
       orderBy: { createdAt: "desc" }
     });
 
-    return rows.map((row) => ({
-      id: row.id,
-      clientNumber: row.clientNumber,
-      referenceMonth: row.referenceMonth,
-      electricEnergyQty: row.electricEnergyQty,
-      electricEnergyValue: Number(row.electricEnergyValue),
-      sceeEnergyQty: row.sceeEnergyQty,
-      sceeEnergyValue: Number(row.sceeEnergyValue),
-      compensatedEnergyQty: row.compensatedEnergyQty,
-      compensatedEnergyValue: Number(row.compensatedEnergyValue),
-      publicLightingContrib: Number(row.publicLightingContrib),
-      electricEnergyConsumption: row.electricEnergyConsumption,
-      compensatedEnergy: row.compensatedEnergy,
-      totalValueWithoutGD: Number(row.totalValueWithoutGD),
-      gdSavings: Number(row.gdSavings),
-      createdAt: row.createdAt
-    }));
+    return rows.map((row) => PrismaInvoiceMapper.toDomain(row));
   }
 
   async save(invoice: Invoice): Promise<Invoice> {

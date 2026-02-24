@@ -1,4 +1,3 @@
-import type { InvoiceListItem } from "@/application/read-models";
 import type { InvoiceService } from "@/application/interfaces/services";
 import type {
   ExtractInvoiceDataUseCase,
@@ -16,7 +15,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     private readonly saveInvoiceUseCase: SaveInvoiceUseCase
   ) {}
 
-  getAll(clientNumber?: string): Promise<InvoiceListItem[]> {
+  getAll(clientNumber?: string): Promise<Invoice[]> {
     return this.getInvoicesUseCase.execute(clientNumber);
   }
 
