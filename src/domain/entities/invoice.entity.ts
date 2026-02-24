@@ -1,9 +1,9 @@
 import { uuidv7 } from "uuidv7";
-import { Quantity, Money, ClientNumber } from "@/domain/value-objects";
+import { Quantity, Money, ClientNumber, ReferenceMonth } from "@/domain/value-objects";
 
 interface InvoiceProps {
   numeroCliente: ClientNumber;
-  mesReferencia: string;
+  mesReferencia: ReferenceMonth;
   energiaEletricaQtd: Quantity;
   energiaEletricaValor: Money;
   energiaSCEEsICMSQtd: Quantity;
@@ -20,7 +20,7 @@ interface InvoiceProps {
 export class Invoice {
   readonly id: string;
   readonly numeroCliente: ClientNumber;
-  readonly mesReferencia: string;
+  readonly mesReferencia: ReferenceMonth;
   readonly energiaEletricaQtd: Quantity;
   readonly energiaEletricaValor: Money;
   readonly energiaSCEEsICMSQtd: Quantity;

@@ -10,7 +10,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       data: {
         id: invoice.id,
         numeroCliente: invoice.numeroCliente.getValue(),
-        mesReferencia: invoice.mesReferencia,
+        mesReferencia: invoice.mesReferencia.getValue(),
         energiaEletricaQtd: invoice.energiaEletricaQtd.getValue(),
         energiaEletricaValor: invoice.energiaEletricaValor.getValue(),
         energiaSCEEsICMSQtd: invoice.energiaSCEEsICMSQtd.getValue(),
