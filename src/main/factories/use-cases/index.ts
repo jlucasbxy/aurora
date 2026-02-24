@@ -1,5 +1,7 @@
 import {
   ExtractInvoiceDataUseCase,
+  GetDashboardEnergyUseCase,
+  GetDashboardFinancialUseCase,
   GetInvoicesUseCase,
   ProcessInvoiceDataUseCase,
   SaveInvoiceUseCase
@@ -22,4 +24,12 @@ export const makeProcessInvoiceDataUseCase = singleton(
 
 export const makeSaveInvoiceUseCase = singleton(
   () => new SaveInvoiceUseCase(makeInvoiceRepository())
+);
+
+export const makeGetDashboardEnergyUseCase = singleton(
+  () => new GetDashboardEnergyUseCase(makeInvoiceRepository())
+);
+
+export const makeGetDashboardFinancialUseCase = singleton(
+  () => new GetDashboardFinancialUseCase(makeInvoiceRepository())
 );

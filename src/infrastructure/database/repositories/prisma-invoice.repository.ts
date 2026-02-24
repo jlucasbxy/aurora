@@ -1,6 +1,9 @@
-import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
+import type {
+  InvoiceAggregateResult,
+  InvoiceRepository
+} from "@/application/interfaces/repositories/invoice-repository";
 import { Invoice } from "@/domain/entities/invoice.entity";
-import type { InvoicesQuery } from "@/domain/value-objects";
+import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
@@ -43,5 +46,26 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     });
 
     return invoice;
+  }
+
+  async aggregate(query: DashboardQuery): Promise<InvoiceAggregateResult> {
+    const result = await this.prisma.invoice.aggregate({
+      where: {
+        ...(query.clientNumber && { clientNumber: query.clientNumber }),
+        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
+      },
+      _sum: {
+        electricEnergyConsumption: true,
+        compensatedEnergy: true,
+        totalValueWithoutGD: true,
+        gdSavings: true
+      }
+    });
+    return {
+      electricEnergyConsumption: Number(result._sum.electricEnergyConsumption ?? 0),
+      compensatedEnergy: Number(result._sum.compensatedEnergy ?? 0),
+      totalValueWithoutGD: Number(result._sum.totalValueWithoutGD ?? 0),
+      gdSavings: Number(result._sum.gdSavings ?? 0)
+    };
   }
 }

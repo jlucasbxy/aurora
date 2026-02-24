@@ -1,0 +1,40 @@
+import { z } from "zod";
+import { ErrorCode } from "@/application/dtos";
+import { DomainError } from "@/domain/errors";
+import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
+
+const schema = z.object({
+  clientNumber: clientNumberSchema.optional(),
+  referenceMonth: referenceMonthSchema.optional()
+});
+
+export interface DashboardQueryProps {
+  clientNumber?: string;
+  referenceMonth?: string;
+}
+
+interface ParsedProps {
+  clientNumber?: string;
+  referenceMonth?: string;
+}
+
+export class DashboardQuery {
+  readonly clientNumber?: string;
+  readonly referenceMonth?: string;
+
+  private constructor(props: ParsedProps) {
+    this.clientNumber = props.clientNumber;
+    this.referenceMonth = props.referenceMonth;
+  }
+
+  static create(props: DashboardQueryProps): DashboardQuery {
+    const result = schema.safeParse(props);
+    if (!result.success) {
+      throw new DomainError(
+        ErrorCode.VALIDATION_ERROR,
+        result.error.issues[0]?.message ?? "Invalid query parameters"
+      );
+    }
+    return new DashboardQuery(result.data);
+  }
+}
