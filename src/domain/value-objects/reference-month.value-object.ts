@@ -1,13 +1,6 @@
-import { z } from "zod";
 import { ErrorCode } from "@/application/dtos";
 import { DomainError } from "@/domain/errors";
-
-const schema = z
-  .string()
-  .regex(
-    /^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)\/\d{4}$/,
-    "Reference month must be in MMM/YYYY format (e.g. JAN/2024)"
-  );
+import { referenceMonthSchema as schema } from "@/shared/schemas";
 
 export class ReferenceMonth {
   private readonly value: string;
