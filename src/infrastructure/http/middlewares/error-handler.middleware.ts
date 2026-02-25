@@ -9,6 +9,15 @@ export function errorHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
+  console.log(error);
+  if ("statusCode" in error && error.statusCode === 413) {
+    const body = toResponse(
+      ErrorCode.FILE_TOO_LARGE,
+      "File or request body exceeds the 50 KB limit"
+    );
+    return reply.status(413).send(body);
+  }
+
   if (error instanceof DomainError) {
     const statusCode = httpStatusFor(error.code);
     const body = toResponse(error.code, error.message);

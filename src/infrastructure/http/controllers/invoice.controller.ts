@@ -36,6 +36,11 @@ export class InvoiceController {
     for await (const chunk of file.file) {
       chunks.push(chunk);
     }
+
+    if (file.file.truncated) {
+      throw new DomainError(ErrorCode.FILE_TOO_LARGE, "File exceeds the 50 KB limit");
+    }
+
     const buffer = Buffer.concat(chunks);
 
     const invoice = await this.invoiceService.processAndSave(buffer);
