@@ -21,13 +21,13 @@ Required fields:
 const InvoiceExtractionSchema = z.object({
   clientNumber: z.string(),
   referenceMonth: z.string(),
-  electricEnergyQty: z.number(),
+  electricEnergyQty: z.number().int(),
   electricEnergyValue: z.number(),
-  sceeEnergyQty: z.number(),
+  sceeEnergyQty: z.number().int(),
   sceeEnergyValue: z.number(),
-  compensatedEnergyQty: z.number(),
+  compensatedEnergyQty: z.number().int(),
   compensatedEnergyValue: z.number(),
-  publicLightingContrib: z.number(),
+  publicLightingContrib: z.number()
 });
 
 export class ClaudeLLMProvider implements LLMProvider {
@@ -52,23 +52,25 @@ export class ClaudeLLMProvider implements LLMProvider {
               source: {
                 type: "base64",
                 media_type: "application/pdf",
-                data: base64Pdf,
-              },
+                data: base64Pdf
+              }
             },
             {
               type: "text",
-              text: EXTRACTION_PROMPT,
-            },
-          ],
-        },
+              text: EXTRACTION_PROMPT
+            }
+          ]
+        }
       ],
       output_config: {
-        format: zodOutputFormat(InvoiceExtractionSchema),
-      },
+        format: zodOutputFormat(InvoiceExtractionSchema)
+      }
     });
 
     if (!response.parsed_output) {
-      throw new Error("Failed to extract invoice data: model returned no structured output");
+      throw new Error(
+        "Failed to extract invoice data: model returned no structured output"
+      );
     }
     return response.parsed_output;
   }
