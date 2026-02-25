@@ -5,7 +5,7 @@ import {
   makeGetInvoicesUseCase,
   makeProcessInvoiceDataUseCase,
   makeSaveInvoiceUseCase
-} from "@/main/factories/use-cases";
+} from "@/main/factories/use-cases/invoices";
 
 export const makeInvoiceService = singleton(
   () =>
