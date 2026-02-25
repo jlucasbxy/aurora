@@ -26,7 +26,11 @@ export class InvoiceServiceImpl implements InvoiceService {
     return this.getInvoicesUseCase.execute(dto);
   }
 
-  async processAndSave(fileStream: Readable, mimetype: string): Promise<InvoiceDto> {
+  async processAndSave(fileStream: Readable | undefined, mimetype: string | undefined): Promise<InvoiceDto> {
+    if (!fileStream) {
+      throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "No file provided");
+    }
+
     if (mimetype !== "application/pdf") {
       throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "Only PDF files are accepted");
     }

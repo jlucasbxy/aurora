@@ -24,12 +24,7 @@ export class InvoiceController {
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
-
-    if (!file) {
-      throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "No file provided");
-    }
-
-    const invoice = await this.invoiceService.processAndSave(file.file, file.mimetype);
+    const invoice = await this.invoiceService.processAndSave(file?.file, file?.mimetype);
     return reply.status(201).send(invoice);
   }
 }

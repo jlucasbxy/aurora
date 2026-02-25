@@ -3,5 +3,5 @@ import type { InvoiceDto, PaginatedResult, QueryInvoiceDto } from "@/application
 
 export interface InvoiceService {
   getAll(dto: QueryInvoiceDto): Promise<PaginatedResult<InvoiceDto>>;
-  processAndSave(fileStream: Readable, mimetype: string): Promise<InvoiceDto>;
+  processAndSave(fileStream: Readable | undefined, mimetype: string | undefined): Promise<InvoiceDto>;
 }
