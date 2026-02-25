@@ -1,25 +1,16 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { InvoiceService } from "@/application/interfaces/services";
-import { MultipartFileParser } from "@/infrastructure/http/parsers";
+import { InvoiceQueryParser, MultipartFileParser } from "@/infrastructure/http/parsers";
 
 export class InvoiceController {
   private readonly multipartFileParser = new MultipartFileParser();
+  private readonly invoiceQueryParser = new InvoiceQueryParser();
 
   constructor(private readonly invoiceService: InvoiceService) {}
 
   async list(request: FastifyRequest, reply: FastifyReply) {
-    const { clientNumber, referenceMonth, cursor, limit } = request.query as {
-      clientNumber?: string;
-      referenceMonth?: string;
-      cursor?: string;
-      limit?: string;
-    };
-    const result = await this.invoiceService.getAll({
-      clientNumber,
-      referenceMonth,
-      cursor,
-      limit
-    });
+    const query = this.invoiceQueryParser.parse(request.query);
+    const result = await this.invoiceService.getAll(query);
     return reply.status(200).send(result);
   }
 
