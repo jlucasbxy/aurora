@@ -1,16 +1,21 @@
 import { z } from "zod";
 import { HttpError } from "@/infrastructure/http/errors";
-import { clientNumberSchema, referenceMonthSchema, uuidV7Schema } from "@/shared/schemas";
+import {
+  clientNumberSchema,
+  referenceMonthSchema,
+  uuidV7Schema
+} from "@/shared/schemas";
 import type { QueryInvoiceDto } from "@/application/dtos/query-invoice.dto";
+import type { Parser } from "@/infrastructure/http/parsers";
 
 const invoiceQuerySchema = z.object({
   clientNumber: clientNumberSchema.optional(),
   referenceMonth: referenceMonthSchema.optional(),
   cursor: uuidV7Schema.optional(),
-  limit: z.string().optional(),
+  limit: z.string().optional()
 });
 
-export class InvoiceQueryParser {
+export class InvoiceQueryParser implements Parser<QueryInvoiceDto> {
   parse(query: unknown): QueryInvoiceDto {
     const result = invoiceQuerySchema.safeParse(query);
 
