@@ -62,10 +62,13 @@ export class ClaudeLLMProvider implements LLMProvider {
         },
       ],
       output_config: {
-        format: zodOutputFormat(InvoiceExtractionSchema, "invoice_extraction"),
+        format: zodOutputFormat(InvoiceExtractionSchema),
       },
     });
 
+    if (!response.parsed_output) {
+      throw new Error("Failed to extract invoice data: model returned no structured output");
+    }
     return response.parsed_output;
   }
 }
