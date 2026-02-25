@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { InvoiceExtractionDto } from "@/application/dtos";
 import type { LLMProvider } from "@/application/interfaces/providers";
 import { env } from "@/infrastructure/config/env.config";
+import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
 
 const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF.
 
@@ -19,8 +20,8 @@ Required fields:
 - publicLightingContrib: public lighting contribution value in BRL (number)`;
 
 const InvoiceExtractionSchema = z.object({
-  clientNumber: z.string(),
-  referenceMonth: z.string(),
+  clientNumber: clientNumberSchema,
+  referenceMonth: referenceMonthSchema,
   electricEnergyQty: z.number().int(),
   electricEnergyValue: z.number(),
   sceeEnergyQty: z.number().int(),
