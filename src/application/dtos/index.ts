@@ -1,4 +1,5 @@
 export { ErrorCode } from "@/domain/enums";
+export type { UploadFileDto } from "@/application/dtos/upload-file.dto";
 export type { DashboardEnergyDto } from "@/application/dtos/dashboard-energy.dto";
 export type { DashboardFinancialDto } from "@/application/dtos/dashboard-financial.dto";
 export type { InvoiceDto } from "@/application/dtos/invoice.dto";

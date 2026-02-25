@@ -24,7 +24,10 @@ export class InvoiceController {
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
-    const invoice = await this.invoiceService.processAndSave(file?.file, file?.mimetype);
+    const invoice = await this.invoiceService.processAndSave({
+      fileStream: file?.file,
+      mimetype: file?.mimetype
+    });
     return reply.status(201).send(invoice);
   }
 }

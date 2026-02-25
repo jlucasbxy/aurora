@@ -1,8 +1,8 @@
-import type { Readable } from "node:stream";
 import type {
   InvoiceDto,
   PaginatedResult,
-  QueryInvoiceDto
+  QueryInvoiceDto,
+  UploadFileDto
 } from "@/application/dtos";
 import type { InvoiceService } from "@/application/interfaces/services";
 import { ErrorCode } from "@/application/dtos";
@@ -26,7 +26,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     return this.getInvoicesUseCase.execute(dto);
   }
 
-  async processAndSave(fileStream: Readable | undefined, mimetype: string | undefined): Promise<InvoiceDto> {
+  async processAndSave({ fileStream, mimetype }: UploadFileDto): Promise<InvoiceDto> {
     if (!fileStream) {
       throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "No file provided");
     }
@@ -40,7 +40,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       chunks.push(chunk);
     }
 
-    if ((fileStream as Readable & { truncated?: boolean }).truncated) {
+    if ((fileStream as typeof fileStream & { truncated?: boolean }).truncated) {
       throw new DomainError(ErrorCode.FILE_TOO_LARGE, "File exceeds the 50 KB limit");
     }
 
