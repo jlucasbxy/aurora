@@ -76,7 +76,7 @@ describe("InvoiceController", () => {
 
   it("list: parses query, calls getAll, and replies 200 with result", async () => {
     const parsedQuery: QueryInvoiceDto = { clientNumber: "7202788900" };
-    const paginatedResult = { data: [mockInvoiceDto], nextCursor: null };
+    const paginatedResult = { data: [mockInvoiceDto], nextCursor: null, hasNextPage: false };
     const mockRequest = { query: {} } as unknown as FastifyRequest;
 
     vi.mocked(mockInvoiceQueryParser.parse).mockReturnValue(parsedQuery);

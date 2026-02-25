@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main/index.ts server",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main/index.js server",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
