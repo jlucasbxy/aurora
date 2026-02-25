@@ -2,7 +2,7 @@ import { ErrorCode } from "@/domain/enums";
 import { DomainError } from "@/domain/errors";
 import type { MultipartFile } from "@fastify/multipart";
 
-export class UploadFileDtoValidator {
+export class MultipartFileParser {
   async validate(file: MultipartFile): Promise<Buffer[]> {
     const chunks: Buffer[] = [];
     const fileStream = file.file;

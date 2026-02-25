@@ -1,9 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { InvoiceService } from "@/application/interfaces/services";
-import { UploadFileDtoValidator } from "@/infrastructure/http/validators";
+import { MultipartFileParser } from "@/infrastructure/http/parsers";
 
 export class InvoiceController {
-  private readonly uploadFileDtoValidator = new UploadFileDtoValidator();
+  private readonly multipartFileParser = new MultipartFileParser();
 
   constructor(private readonly invoiceService: InvoiceService) {}
 
@@ -25,7 +25,7 @@ export class InvoiceController {
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
-    const chunks = await this.uploadFileDtoValidator.validate(file!);
+    const chunks = await this.multipartFileParser.validate(file!);
     const pdfBuffer = Buffer.concat(chunks);
     const invoice = await this.invoiceService.processAndSave(pdfBuffer);
     return reply.status(201).send(invoice);
