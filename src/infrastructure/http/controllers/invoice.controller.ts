@@ -1,15 +1,15 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { MultipartFile } from "@fastify/multipart";
 import type { InvoiceService } from "@/application/interfaces/services";
-import {
-  InvoiceQueryParser,
-  MultipartFileParser
-} from "@/infrastructure/http/parsers";
+import type { QueryInvoiceDto } from "@/application/dtos/query-invoice.dto";
+import type { Parser } from "@/infrastructure/http/parsers";
 
 export class InvoiceController {
-  private readonly multipartFileParser = new MultipartFileParser();
-  private readonly invoiceQueryParser = new InvoiceQueryParser();
-
-  constructor(private readonly invoiceService: InvoiceService) {}
+  constructor(
+    private readonly invoiceService: InvoiceService,
+    private readonly invoiceQueryParser: Parser<QueryInvoiceDto>,
+    private readonly multipartFileParser: Parser<Promise<Buffer[]>, MultipartFile>
+  ) {}
 
   async list(request: FastifyRequest, reply: FastifyReply) {
     const query = this.invoiceQueryParser.parse(request.query);

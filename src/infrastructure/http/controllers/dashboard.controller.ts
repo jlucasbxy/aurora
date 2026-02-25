@@ -1,11 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { DashboardService } from "@/application/interfaces/services";
-import { DashboardQueryParser } from "@/infrastructure/http/parsers";
+import type { QueryDashboardDto } from "@/application/dtos/query-dashboard.dto";
+import type { Parser } from "@/infrastructure/http/parsers";
 
 export class DashboardController {
   constructor(
     private readonly dashboardService: DashboardService,
-    private readonly queryParser: DashboardQueryParser = new DashboardQueryParser()
+    private readonly queryParser: Parser<QueryDashboardDto>
   ) {}
 
   async energy(request: FastifyRequest, reply: FastifyReply) {
