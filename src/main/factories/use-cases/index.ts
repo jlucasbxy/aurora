@@ -1,11 +1,13 @@
 import {
-  ExtractInvoiceDataUseCase,
   GetDashboardEnergyUseCase,
-  GetDashboardFinancialUseCase,
+  GetDashboardFinancialUseCase
+} from "@/application/use-cases/dashboard";
+import {
+  ExtractInvoiceDataUseCase,
   GetInvoicesUseCase,
   ProcessInvoiceDataUseCase,
   SaveInvoiceUseCase
-} from "@/application/use-cases";
+} from "@/application/use-cases/invoices";
 import { makeClaudeLLMProvider } from "@/main/factories/providers";
 import { makeInvoiceRepository } from "@/main/factories/repositories";
 import { singleton } from "@/main/factories/singleton.util";

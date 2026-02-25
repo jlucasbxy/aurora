@@ -1,11 +1,15 @@
-import type { InvoiceDto, PaginatedResult, QueryInvoiceDto } from "@/application/dtos";
+import type {
+  InvoiceDto,
+  PaginatedResult,
+  QueryInvoiceDto
+} from "@/application/dtos";
 import type { InvoiceService } from "@/application/interfaces/services";
 import type {
   ExtractInvoiceDataUseCase,
   GetInvoicesUseCase,
   ProcessInvoiceDataUseCase,
   SaveInvoiceUseCase
-} from "@/application/use-cases";
+} from "@/application/use-cases/invoices";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(

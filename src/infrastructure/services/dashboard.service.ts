@@ -7,7 +7,7 @@ import type { DashboardService } from "@/application/interfaces/services";
 import type {
   GetDashboardEnergyUseCase,
   GetDashboardFinancialUseCase
-} from "@/application/use-cases";
+} from "@/application/use-cases/dashboard";
 
 export class DashboardServiceImpl implements DashboardService {
   constructor(
