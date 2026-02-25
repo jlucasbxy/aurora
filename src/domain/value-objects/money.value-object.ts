@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ErrorCode } from "@/domain/enums";
 import { DomainError } from "@/domain/errors";
 
-const schema = z.number().finite();
+const schema = z.number();
 
 export class Money {
   private readonly value: number;
