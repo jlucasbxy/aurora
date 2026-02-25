@@ -1,6 +1,6 @@
-import type { InvoiceDto, PaginatedResult, QueryInvoiceDto, UploadFileDto } from "@/application/dtos";
+import type { InvoiceDto, PaginatedResult, QueryInvoiceDto } from "@/application/dtos";
 
 export interface InvoiceService {
   getAll(dto: QueryInvoiceDto): Promise<PaginatedResult<InvoiceDto>>;
-  processAndSave(file: UploadFileDto): Promise<InvoiceDto>;
+  processAndSave(pdfBuffer: Buffer): Promise<InvoiceDto>;
 }
