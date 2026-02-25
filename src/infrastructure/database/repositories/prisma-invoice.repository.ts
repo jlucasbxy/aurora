@@ -12,7 +12,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
   async findAll(query: InvoicesQuery): Promise<Invoice[]> {
     const rows = await this.prisma.invoice.findMany({
       where: {
-        ...(query.clientNumber && { clientNumber: query.clientNumber }),
+        clientNumber: query.clientNumber,
         ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
       },
       orderBy: { id: "desc" },
@@ -50,7 +50,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
   async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel> {
     const result = await this.prisma.invoice.aggregate({
       where: {
-        ...(query.clientNumber && { clientNumber: query.clientNumber }),
+        clientNumber: query.clientNumber,
         ...((query.dateStart || query.dateEnd) && {
           referenceMonth: {
             ...(query.dateStart && { gte: ReferenceMonth.create(query.dateStart).getValue() }),
@@ -72,7 +72,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
   async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel> {
     const result = await this.prisma.invoice.aggregate({
       where: {
-        ...(query.clientNumber && { clientNumber: query.clientNumber }),
+        clientNumber: query.clientNumber,
         ...((query.dateStart || query.dateEnd) && {
           referenceMonth: {
             ...(query.dateStart && { gte: ReferenceMonth.create(query.dateStart).getValue() }),

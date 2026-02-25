@@ -4,7 +4,7 @@ import type { QueryDashboardDto } from "@/application/dtos/query-dashboard.dto";
 import type { Parser } from "@/infrastructure/http/parsers";
 
 const dashboardQuerySchema = z.object({
-  clientNumber: z.string().optional(),
+  clientNumber: z.string(),
   dateStart: z.string().optional(),
   dateEnd: z.string().optional()
 });

@@ -1,5 +1,5 @@
 export interface QueryDashboardDto {
-  clientNumber?: string;
+  clientNumber: string;
   dateStart?: string;
   dateEnd?: string;
 }

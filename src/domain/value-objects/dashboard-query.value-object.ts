@@ -3,25 +3,25 @@ import { InvalidDashboardQueryError } from "@/domain/errors";
 import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
 
 const schema = z.object({
-  clientNumber: clientNumberSchema.optional(),
+  clientNumber: clientNumberSchema,
   dateStart: referenceMonthSchema.optional(),
   dateEnd: referenceMonthSchema.optional()
 });
 
 export interface DashboardQueryProps {
-  clientNumber?: string;
+  clientNumber: string;
   dateStart?: string;
   dateEnd?: string;
 }
 
 interface ParsedProps {
-  clientNumber?: string;
+  clientNumber: string;
   dateStart?: string;
   dateEnd?: string;
 }
 
 export class DashboardQuery {
-  readonly clientNumber?: string;
+  readonly clientNumber: string;
   readonly dateStart?: string;
   readonly dateEnd?: string;
 
