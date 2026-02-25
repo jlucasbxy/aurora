@@ -20,6 +20,10 @@ export class ReferenceMonth {
     return new ReferenceMonth(result.data);
   }
 
+  static reconstitute(value: string): ReferenceMonth {
+    return new ReferenceMonth(value);
+  }
+
   getValue(): string {
     return this.value;
   }

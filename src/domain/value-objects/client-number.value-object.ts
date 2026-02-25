@@ -20,6 +20,10 @@ export class ClientNumber {
     return new ClientNumber(result.data);
   }
 
+  static reconstitute(value: string): ClientNumber {
+    return new ClientNumber(value);
+  }
+
   getValue(): string {
     return this.value;
   }

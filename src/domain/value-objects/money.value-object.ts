@@ -22,6 +22,10 @@ export class Money {
     return new Money(result.data);
   }
 
+  static reconstitute(value: number): Money {
+    return new Money(value);
+  }
+
   getValue(): number {
     return this.value;
   }
