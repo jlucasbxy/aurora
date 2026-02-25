@@ -1,7 +1,7 @@
 import type { InvoiceDto } from "@/application/dtos";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import { InvoiceMapper } from "@/application/mappers";
-import type { ProcessedInvoiceData } from "@/application/use-cases/process-invoice-data.use-case";
+import type { ProcessedInvoiceData } from "./process-invoice-data.use-case";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
   ClientNumber,
