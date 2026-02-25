@@ -1,9 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { ErrorCode } from "@/application/dtos";
 import type { InvoiceService } from "@/application/interfaces/services";
-import { DomainError } from "@/domain/errors";
+import { UploadFileValidator } from "@/infrastructure/http/validators";
 
 export class InvoiceController {
+  private readonly uploadFileValidator = new UploadFileValidator();
+
   constructor(private readonly invoiceService: InvoiceService) {}
 
   async list(request: FastifyRequest, reply: FastifyReply) {
@@ -24,10 +25,9 @@ export class InvoiceController {
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
-    const invoice = await this.invoiceService.processAndSave({
-      fileStream: file?.file,
-      mimetype: file?.mimetype
-    });
+    const dto = { fileStream: file?.file, mimetype: file?.mimetype };
+    this.uploadFileValidator.validate(dto);
+    const invoice = await this.invoiceService.processAndSave(dto);
     return reply.status(201).send(invoice);
   }
 }

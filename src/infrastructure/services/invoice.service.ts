@@ -26,21 +26,13 @@ export class InvoiceServiceImpl implements InvoiceService {
     return this.getInvoicesUseCase.execute(dto);
   }
 
-  async processAndSave({ fileStream, mimetype }: UploadFileDto): Promise<InvoiceDto> {
-    if (!fileStream) {
-      throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "No file provided");
-    }
-
-    if (mimetype !== "application/pdf") {
-      throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "Only PDF files are accepted");
-    }
-
+  async processAndSave({ fileStream }: UploadFileDto): Promise<InvoiceDto> {
     const chunks: Buffer[] = [];
-    for await (const chunk of fileStream) {
+    for await (const chunk of fileStream!) {
       chunks.push(chunk);
     }
 
-    if ((fileStream as typeof fileStream & { truncated?: boolean }).truncated) {
+    if ((fileStream! as typeof fileStream & { truncated?: boolean }).truncated) {
       throw new DomainError(ErrorCode.FILE_TOO_LARGE, "File exceeds the 50 KB limit");
     }
 
