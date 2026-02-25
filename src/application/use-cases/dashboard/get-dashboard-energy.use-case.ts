@@ -1,5 +1,6 @@
 import type { DashboardEnergyDto, QueryDashboardDto } from "@/application/dtos";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
+import { InvoiceEnergyMapper } from "@/application/mappers";
 import { DashboardQuery } from "@/domain/value-objects";
 
 export class GetDashboardEnergyUseCase {
@@ -7,10 +8,7 @@ export class GetDashboardEnergyUseCase {
 
   async execute(dto: QueryDashboardDto): Promise<DashboardEnergyDto> {
     const query = DashboardQuery.create(dto);
-    const result = await this.invoiceRepository.aggregateEnergy(query);
-    return {
-      electricEnergyConsumption: result.electricEnergyConsumption,
-      compensatedEnergy: result.compensatedEnergy
-    };
+    const readModel = await this.invoiceRepository.aggregateEnergy(query);
+    return InvoiceEnergyMapper.toDto(readModel);
   }
 }

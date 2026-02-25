@@ -1,10 +1,8 @@
-import type {
-  InvoiceEnergyResult,
-  InvoiceFinancialResult,
-  InvoiceRepository
-} from "@/application/interfaces/repositories/invoice-repository";
+import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
+import type { InvoiceEnergyReadModel, InvoiceFinancialReadModel } from "@/application/read-models";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
+import { Money, Quantity } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
@@ -49,7 +47,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     return invoice;
   }
 
-  async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyResult> {
+  async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel> {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
@@ -61,12 +59,12 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       }
     });
     return {
-      electricEnergyConsumption: Number(result._sum.electricEnergyConsumption ?? 0),
-      compensatedEnergy: Number(result._sum.compensatedEnergy ?? 0)
+      electricEnergyConsumption: Quantity.create(Number(result._sum.electricEnergyConsumption ?? 0)),
+      compensatedEnergy: Quantity.create(Number(result._sum.compensatedEnergy ?? 0))
     };
   }
 
-  async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialResult> {
+  async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel> {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
@@ -78,8 +76,8 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       }
     });
     return {
-      totalValueWithoutGD: Number(result._sum.totalValueWithoutGD ?? 0),
-      gdSavings: Number(result._sum.gdSavings ?? 0)
+      totalValueWithoutGD: Money.create(Number(result._sum.totalValueWithoutGD ?? 0)),
+      gdSavings: Money.create(Number(result._sum.gdSavings ?? 0))
     };
   }
 }

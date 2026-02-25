@@ -1,5 +1,6 @@
 import type { DashboardFinancialDto, QueryDashboardDto } from "@/application/dtos";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
+import { InvoiceFinancialMapper } from "@/application/mappers";
 import { DashboardQuery } from "@/domain/value-objects";
 
 export class GetDashboardFinancialUseCase {
@@ -7,10 +8,7 @@ export class GetDashboardFinancialUseCase {
 
   async execute(dto: QueryDashboardDto): Promise<DashboardFinancialDto> {
     const query = DashboardQuery.create(dto);
-    const result = await this.invoiceRepository.aggregateFinancial(query);
-    return {
-      totalValueWithoutGD: result.totalValueWithoutGD,
-      gdSavings: result.gdSavings
-    };
+    const readModel = await this.invoiceRepository.aggregateFinancial(query);
+    return InvoiceFinancialMapper.toDto(readModel);
   }
 }
