@@ -1,12 +1,11 @@
 import { z } from "zod";
 import { HttpError } from "@/infrastructure/http/errors";
-import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
 import type { QueryDashboardDto } from "@/application/dtos/query-dashboard.dto";
 import type { Parser } from "@/infrastructure/http/parsers";
 
 const dashboardQuerySchema = z.object({
-  clientNumber: clientNumberSchema.optional(),
-  referenceMonth: referenceMonthSchema.optional()
+  clientNumber: z.string().optional(),
+  referenceMonth: z.string().optional()
 });
 
 export class DashboardQueryParser implements Parser<QueryDashboardDto> {
