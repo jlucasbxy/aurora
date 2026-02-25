@@ -2,6 +2,7 @@ import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
 import { ErrorCode } from "@/application/dtos";
 import { DomainError } from "@/domain/errors";
+import { HttpError } from "@/infrastructure/http/errors";
 import { httpStatusFor, toResponse } from "@/infrastructure/http/presenters";
 
 export function errorHandler(
@@ -16,6 +17,10 @@ export function errorHandler(
       "File or request body exceeds the 50 KB limit"
     );
     return reply.status(413).send(body);
+  }
+
+  if (error instanceof HttpError) {
+    return reply.status(error.statusCode).send({ code: error.code, message: error.message });
   }
 
   if (error instanceof DomainError) {
