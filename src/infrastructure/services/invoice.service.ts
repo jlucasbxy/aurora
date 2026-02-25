@@ -1,9 +1,12 @@
+import type { Readable } from "node:stream";
 import type {
   InvoiceDto,
   PaginatedResult,
   QueryInvoiceDto
 } from "@/application/dtos";
 import type { InvoiceService } from "@/application/interfaces/services";
+import { ErrorCode } from "@/application/dtos";
+import { DomainError } from "@/domain/errors";
 import type {
   ExtractInvoiceDataUseCase,
   GetInvoicesUseCase,
@@ -23,7 +26,21 @@ export class InvoiceServiceImpl implements InvoiceService {
     return this.getInvoicesUseCase.execute(dto);
   }
 
-  async processAndSave(pdfBuffer: Buffer): Promise<InvoiceDto> {
+  async processAndSave(fileStream: Readable, mimetype: string): Promise<InvoiceDto> {
+    if (mimetype !== "application/pdf") {
+      throw new DomainError(ErrorCode.INVALID_FILE_TYPE, "Only PDF files are accepted");
+    }
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of fileStream) {
+      chunks.push(chunk);
+    }
+
+    if ((fileStream as Readable & { truncated?: boolean }).truncated) {
+      throw new DomainError(ErrorCode.FILE_TOO_LARGE, "File exceeds the 50 KB limit");
+    }
+
+    const pdfBuffer = Buffer.concat(chunks);
     const extracted = await this.extractInvoiceDataUseCase.execute(pdfBuffer);
     const processed = this.processInvoiceDataUseCase.execute(extracted);
     return this.saveInvoiceUseCase.execute(processed);
