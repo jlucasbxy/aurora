@@ -18,16 +18,16 @@ model Invoice {
   clientNumber              String
   referenceMonth            String
   electricEnergyQty         Int
-  electricEnergyValue       Decimal
+  electricEnergyValue       Decimal  @db.Decimal(15, 2)
   sceeEnergyQty             Int
-  sceeEnergyValue           Decimal
+  sceeEnergyValue           Decimal  @db.Decimal(15, 2)
   compensatedEnergyQty      Int
-  compensatedEnergyValue    Decimal
-  publicLightingContrib     Decimal
+  compensatedEnergyValue    Decimal  @db.Decimal(15, 2)
+  publicLightingContrib     Decimal  @db.Decimal(15, 2)
   electricEnergyConsumption Int
   compensatedEnergy         Int
-  totalValueWithoutGD       Decimal
-  gdSavings                 Decimal
+  totalValueWithoutGD       Decimal  @db.Decimal(15, 2)
+  gdSavings                 Decimal  @db.Decimal(15, 2)
   createdAt                 DateTime
 
   @@index([clientNumber, referenceMonth])
