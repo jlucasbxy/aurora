@@ -10,19 +10,19 @@ import type { InvoiceModel } from "@/infrastructure/database/prisma/generated/pr
 export class PrismaInvoiceMapper {
   static toDomain(row: InvoiceModel): Invoice {
     return Invoice.reconstitute(row.id, row.createdAt, {
-      clientNumber: ClientNumber.create(row.clientNumber),
-      referenceMonth: ReferenceMonth.create(row.referenceMonth),
-      electricEnergyQty: Quantity.create(row.electricEnergyQty),
-      electricEnergyValue: Money.create(Number(row.electricEnergyValue)),
-      sceeEnergyQty: Quantity.create(row.sceeEnergyQty),
-      sceeEnergyValue: Money.create(Number(row.sceeEnergyValue)),
-      compensatedEnergyQty: Quantity.create(row.compensatedEnergyQty),
-      compensatedEnergyValue: Money.create(Number(row.compensatedEnergyValue)),
-      publicLightingContrib: Money.create(Number(row.publicLightingContrib)),
-      electricEnergyConsumption: Quantity.create(row.electricEnergyConsumption),
-      compensatedEnergy: Quantity.create(row.compensatedEnergy),
-      totalValueWithoutGD: Money.create(Number(row.totalValueWithoutGD)),
-      gdSavings: Money.create(Number(row.gdSavings))
+      clientNumber: ClientNumber.reconstitute(row.clientNumber),
+      referenceMonth: ReferenceMonth.reconstitute(row.referenceMonth),
+      electricEnergyQty: Quantity.reconstitute(row.electricEnergyQty),
+      electricEnergyValue: Money.reconstitute(Number(row.electricEnergyValue)),
+      sceeEnergyQty: Quantity.reconstitute(row.sceeEnergyQty),
+      sceeEnergyValue: Money.reconstitute(Number(row.sceeEnergyValue)),
+      compensatedEnergyQty: Quantity.reconstitute(row.compensatedEnergyQty),
+      compensatedEnergyValue: Money.reconstitute(Number(row.compensatedEnergyValue)),
+      publicLightingContrib: Money.reconstitute(Number(row.publicLightingContrib)),
+      electricEnergyConsumption: Quantity.reconstitute(row.electricEnergyConsumption),
+      compensatedEnergy: Quantity.reconstitute(row.compensatedEnergy),
+      totalValueWithoutGD: Money.reconstitute(Number(row.totalValueWithoutGD)),
+      gdSavings: Money.reconstitute(Number(row.gdSavings))
     });
   }
 }

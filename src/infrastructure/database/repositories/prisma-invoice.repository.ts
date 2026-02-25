@@ -59,8 +59,8 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       }
     });
     return {
-      electricEnergyConsumption: Quantity.create(Number(result._sum.electricEnergyConsumption ?? 0)),
-      compensatedEnergy: Quantity.create(Number(result._sum.compensatedEnergy ?? 0))
+      electricEnergyConsumption: Quantity.reconstitute(Number(result._sum.electricEnergyConsumption ?? 0)),
+      compensatedEnergy: Quantity.reconstitute(Number(result._sum.compensatedEnergy ?? 0))
     };
   }
 
@@ -76,8 +76,8 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       }
     });
     return {
-      totalValueWithoutGD: Money.create(Number(result._sum.totalValueWithoutGD ?? 0)),
-      gdSavings: Money.create(Number(result._sum.gdSavings ?? 0))
+      totalValueWithoutGD: Money.reconstitute(Number(result._sum.totalValueWithoutGD ?? 0)),
+      gdSavings: Money.reconstitute(Number(result._sum.gdSavings ?? 0))
     };
   }
 }
