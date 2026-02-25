@@ -2,9 +2,19 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import type { InvoiceExtractionDto } from "@/application/dtos";
+import { LlmError } from "@/application/interfaces/providers";
 import type { LLMProvider } from "@/application/interfaces/providers";
 import { env } from "@/infrastructure/config/env.config";
 import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
+
+const MAX_ATTEMPTS = 2;
+
+function isRetryable(error: unknown): boolean {
+  return (
+    error instanceof Anthropic.APIConnectionError ||
+    error instanceof Anthropic.InternalServerError
+  );
+}
 
 const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF.
 
@@ -35,44 +45,67 @@ export class ClaudeLLMProvider implements LLMProvider {
   private readonly client: Anthropic;
 
   constructor() {
-    this.client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+    this.client = new Anthropic({
+      apiKey: env.ANTHROPIC_API_KEY,
+      maxRetries: 0
+    });
   }
 
   async extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionDto> {
     const base64Pdf = pdfBuffer.toString("base64");
+    let lastError: unknown;
 
-    const response = await this.client.messages.parse({
-      model: "claude-haiku-4-5",
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: [
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const response = await this.client.messages.parse({
+          model: "claude-haiku-4-5",
+          max_tokens: 1024,
+          messages: [
             {
-              type: "document",
-              source: {
-                type: "base64",
-                media_type: "application/pdf",
-                data: base64Pdf
-              }
-            },
-            {
-              type: "text",
-              text: EXTRACTION_PROMPT
+              role: "user",
+              content: [
+                {
+                  type: "document",
+                  source: {
+                    type: "base64",
+                    media_type: "application/pdf",
+                    data: base64Pdf
+                  }
+                },
+                {
+                  type: "text",
+                  text: EXTRACTION_PROMPT
+                }
+              ]
             }
-          ]
-        }
-      ],
-      output_config: {
-        format: zodOutputFormat(InvoiceExtractionSchema)
-      }
-    });
+          ],
+          output_config: {
+            format: zodOutputFormat(InvoiceExtractionSchema)
+          }
+        });
 
-    if (!response.parsed_output) {
-      throw new Error(
-        "Failed to extract invoice data: model returned no structured output"
-      );
+        if (!response.parsed_output) {
+          lastError = new Error("Model returned no structured output");
+          continue;
+        }
+
+        return response.parsed_output;
+      } catch (error) {
+        if (error instanceof Anthropic.RateLimitError) {
+          throw new LlmError("RATE_LIMITED", "LLM rate limit exceeded");
+        }
+
+        if (!isRetryable(error)) {
+          throw new LlmError("EXTRACTION_FAILED", "Failed to extract invoice data");
+        }
+
+        lastError = error;
+      }
     }
-    return response.parsed_output;
+
+    throw new LlmError(
+      "EXTRACTION_FAILED",
+      `Failed to extract invoice data after ${MAX_ATTEMPTS} attempts`
+    );
   }
 }
