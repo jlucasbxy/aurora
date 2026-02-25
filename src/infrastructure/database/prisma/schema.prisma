@@ -16,7 +16,7 @@ datasource db {
 model Invoice {
   id                        String   @id
   clientNumber              String
-  referenceMonth            String
+  referenceMonth            DateTime @db.Date
   electricEnergyQty         Int
   electricEnergyValue       Decimal  @db.Decimal(15, 2)
   sceeEnergyQty             Int

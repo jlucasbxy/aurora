@@ -6,7 +6,7 @@ export class InvoiceMapper {
     return {
       id: invoice.id,
       clientNumber: invoice.clientNumber.getValue(),
-      referenceMonth: invoice.referenceMonth.getValue(),
+      referenceMonth: invoice.referenceMonth.toDisplay(),
       electricEnergyQty: invoice.electricEnergyQty.getValue(),
       electricEnergyValue: invoice.electricEnergyValue.getValue(),
       sceeEnergyQty: invoice.sceeEnergyQty.getValue(),

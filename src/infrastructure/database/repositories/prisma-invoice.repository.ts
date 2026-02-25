@@ -2,7 +2,7 @@ import type { InvoiceRepository } from "@/application/interfaces/repositories/in
 import type { InvoiceEnergyReadModel, InvoiceFinancialReadModel } from "@/application/read-models";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
-import { Money, Quantity } from "@/domain/value-objects";
+import { Money, Quantity, ReferenceMonth } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
@@ -13,7 +13,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const rows = await this.prisma.invoice.findMany({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
-        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
+        ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
       },
       orderBy: { id: "desc" },
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
@@ -51,7 +51,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
-        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
+        ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
       },
       _sum: {
         electricEnergyConsumption: true,
@@ -68,7 +68,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
-        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
+        ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
       },
       _sum: {
         totalValueWithoutGD: true,

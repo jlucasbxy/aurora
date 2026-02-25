@@ -76,7 +76,7 @@ describe("SaveInvoiceUseCase", () => {
     const passedInvoice = vi.mocked(mockRepo.save).mock.calls[0]?.[0] as Invoice;
     expect(passedInvoice).toBeInstanceOf(Invoice);
     expect(passedInvoice.clientNumber.getValue()).toBe(fixture.clientNumber);
-    expect(passedInvoice.referenceMonth.getValue()).toBe(fixture.referenceMonth);
+    expect(passedInvoice.referenceMonth.toDisplay()).toBe(fixture.referenceMonth);
     expect(passedInvoice.electricEnergyConsumption.getValue()).toBe(fixture.electricEnergyConsumption);
   });
 
