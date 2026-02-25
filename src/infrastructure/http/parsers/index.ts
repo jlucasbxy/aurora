@@ -3,3 +3,4 @@ export interface Parser<T, K = unknown> {
 }
 export { MultipartFileParser } from "@/infrastructure/http/parsers/multipart-file.parser";
 export { InvoiceQueryParser } from "@/infrastructure/http/parsers/invoice-query.parser";
+export { DashboardQueryParser } from "@/infrastructure/http/parsers/dashboard-query.parser";
