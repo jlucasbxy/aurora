@@ -21,22 +21,17 @@ export class ProcessInvoiceDataUseCase {
     return {
       clientNumber: result.clientNumber,
       referenceMonth: result.referenceMonth,
-      electricEnergyQty: Math.round(result.electricEnergy.qty),
-      electricEnergyValue: result.electricEnergy.value,
-      sceeEnergyQty: Math.round(result.sceeEnergy.qty),
-      sceeEnergyValue: result.sceeEnergy.value,
-      compensatedEnergyQty: Math.round(result.compensatedEnergyGDI.qty),
-      compensatedEnergyValue: result.compensatedEnergyGDI.value,
-      publicLightingContrib: result.publicLightingContrib.value,
-      electricEnergyConsumption: Math.round(
-        result.electricEnergy.qty + result.sceeEnergy.qty
-      ),
-      compensatedEnergy: Math.round(result.compensatedEnergyGDI.qty),
-      totalValueWithoutGD:
-        result.electricEnergy.value +
-        result.sceeEnergy.value +
-        result.publicLightingContrib.value,
-      gdSavings: result.compensatedEnergyGDI.value
+      electricEnergyQty: Math.round(result.electricEnergyQty),
+      electricEnergyValue: result.electricEnergyValue,
+      sceeEnergyQty: Math.round(result.sceeEnergyQty),
+      sceeEnergyValue: result.sceeEnergyValue,
+      compensatedEnergyQty: Math.round(result.compensatedEnergyQty),
+      compensatedEnergyValue: result.compensatedEnergyValue,
+      publicLightingContrib: result.publicLightingContrib,
+      electricEnergyConsumption: Math.round(result.electricEnergyQty + result.sceeEnergyQty),
+      compensatedEnergy: Math.round(result.compensatedEnergyQty),
+      totalValueWithoutGD: result.electricEnergyValue + result.sceeEnergyValue + result.publicLightingContrib,
+      gdSavings: result.compensatedEnergyValue,
     };
   }
 }

@@ -9,24 +9,25 @@ const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PD
 
 Required fields:
 - clientNumber: the customer number (string)
-- referenceMonth: the reference month in format "MMM/YYYY" e.g. "SET/2024" (string)
-- electricEnergy: object with "qty" (kWh, number) and "value" (BRL, number)
-- sceeEnergy: object with "qty" (kWh, number) and "value" (BRL, number)
-- compensatedEnergyGDI: object with "qty" (kWh, number) and "value" (BRL, number, typically negative)
-- publicLightingContrib: object with "value" (BRL, number)`;
-
-const EnergyItemSchema = z.object({
-  qty: z.number(),
-  value: z.number(),
-});
+- referenceMonth: the reference month in format "MMM/YYYY" e.g. "JAN/2024" (string)
+- electricEnergyQty: electric energy quantity in kWh (number)
+- electricEnergyValue: electric energy value in BRL (number)
+- sceeEnergyQty: SCEE energy quantity in kWh (number)
+- sceeEnergyValue: SCEE energy value in BRL (number)
+- compensatedEnergyQty: compensated GDI energy quantity in kWh (number)
+- compensatedEnergyValue: compensated GDI energy value in BRL, typically negative (number)
+- publicLightingContrib: public lighting contribution value in BRL (number)`;
 
 const InvoiceExtractionSchema = z.object({
   clientNumber: z.string(),
   referenceMonth: z.string(),
-  electricEnergy: EnergyItemSchema,
-  sceeEnergy: EnergyItemSchema,
-  compensatedEnergyGDI: EnergyItemSchema,
-  publicLightingContrib: z.object({ value: z.number() }),
+  electricEnergyQty: z.number(),
+  electricEnergyValue: z.number(),
+  sceeEnergyQty: z.number(),
+  sceeEnergyValue: z.number(),
+  compensatedEnergyQty: z.number(),
+  compensatedEnergyValue: z.number(),
+  publicLightingContrib: z.number(),
 });
 
 export class ClaudeLLMProvider implements LLMProvider {
