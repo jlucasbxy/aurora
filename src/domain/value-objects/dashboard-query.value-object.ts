@@ -4,26 +4,31 @@ import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
 
 const schema = z.object({
   clientNumber: clientNumberSchema.optional(),
-  referenceMonth: referenceMonthSchema.optional()
+  dateStart: referenceMonthSchema.optional(),
+  dateEnd: referenceMonthSchema.optional()
 });
 
 export interface DashboardQueryProps {
   clientNumber?: string;
-  referenceMonth?: string;
+  dateStart?: string;
+  dateEnd?: string;
 }
 
 interface ParsedProps {
   clientNumber?: string;
-  referenceMonth?: string;
+  dateStart?: string;
+  dateEnd?: string;
 }
 
 export class DashboardQuery {
   readonly clientNumber?: string;
-  readonly referenceMonth?: string;
+  readonly dateStart?: string;
+  readonly dateEnd?: string;
 
   private constructor(props: ParsedProps) {
     this.clientNumber = props.clientNumber;
-    this.referenceMonth = props.referenceMonth;
+    this.dateStart = props.dateStart;
+    this.dateEnd = props.dateEnd;
   }
 
   static create(props: DashboardQueryProps): DashboardQuery {

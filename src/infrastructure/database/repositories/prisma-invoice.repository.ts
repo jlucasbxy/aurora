@@ -51,7 +51,12 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
-        ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
+        ...((query.dateStart || query.dateEnd) && {
+          referenceMonth: {
+            ...(query.dateStart && { gte: ReferenceMonth.create(query.dateStart).getValue() }),
+            ...(query.dateEnd && { lte: ReferenceMonth.create(query.dateEnd).getValue() })
+          }
+        })
       },
       _sum: {
         electricEnergyConsumption: true,
@@ -68,7 +73,12 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const result = await this.prisma.invoice.aggregate({
       where: {
         ...(query.clientNumber && { clientNumber: query.clientNumber }),
-        ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
+        ...((query.dateStart || query.dateEnd) && {
+          referenceMonth: {
+            ...(query.dateStart && { gte: ReferenceMonth.create(query.dateStart).getValue() }),
+            ...(query.dateEnd && { lte: ReferenceMonth.create(query.dateEnd).getValue() })
+          }
+        })
       },
       _sum: {
         totalValueWithoutGD: true,
