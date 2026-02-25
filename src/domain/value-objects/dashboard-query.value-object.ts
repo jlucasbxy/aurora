@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { ErrorCode } from "@/domain/enums";
-import { DomainError } from "@/domain/errors";
+import { InvalidDashboardQueryError } from "@/domain/errors";
 import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
 
 const schema = z.object({
@@ -30,10 +29,7 @@ export class DashboardQuery {
   static create(props: DashboardQueryProps): DashboardQuery {
     const result = schema.safeParse(props);
     if (!result.success) {
-      throw new DomainError(
-        ErrorCode.VALIDATION_ERROR,
-        result.error.issues[0]?.message ?? "Invalid query parameters"
-      );
+      throw new InvalidDashboardQueryError(result.error.issues[0]?.message);
     }
     return new DashboardQuery(result.data);
   }

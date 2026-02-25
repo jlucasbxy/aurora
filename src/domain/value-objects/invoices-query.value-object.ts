@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { ErrorCode } from "@/domain/enums";
-import { DomainError } from "@/domain/errors";
+import { InvalidInvoicesQueryError } from "@/domain/errors";
 import {
   clientNumberSchema,
   limitSchema,
@@ -45,10 +44,7 @@ export class InvoicesQuery {
   static create(props: InvoicesQueryProps): InvoicesQuery {
     const result = schema.safeParse(props);
     if (!result.success) {
-      throw new DomainError(
-        ErrorCode.VALIDATION_ERROR,
-        result.error.issues[0]?.message ?? "Invalid query parameters"
-      );
+      throw new InvalidInvoicesQueryError(result.error.issues[0]?.message);
     }
     return new InvoicesQuery(result.data);
   }

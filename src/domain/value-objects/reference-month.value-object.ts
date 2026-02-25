@@ -1,5 +1,4 @@
-import { ErrorCode } from "@/domain/enums";
-import { DomainError } from "@/domain/errors";
+import { InvalidReferenceMonthError } from "@/domain/errors";
 import { referenceMonthSchema as schema } from "@/shared/schemas";
 
 export class ReferenceMonth {
@@ -12,10 +11,7 @@ export class ReferenceMonth {
   static create(raw: string): ReferenceMonth {
     const result = schema.safeParse(raw);
     if (!result.success) {
-      throw new DomainError(
-        ErrorCode.VALIDATION_ERROR,
-        result.error.issues[0]?.message ?? "Invalid reference month"
-      );
+      throw new InvalidReferenceMonthError(result.error.issues[0]?.message);
     }
     return new ReferenceMonth(result.data);
   }

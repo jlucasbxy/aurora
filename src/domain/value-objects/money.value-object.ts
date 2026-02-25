@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { ErrorCode } from "@/domain/enums";
-import { DomainError } from "@/domain/errors";
+import { InvalidMoneyError } from "@/domain/errors";
 
 const schema = z.number();
 
@@ -14,10 +13,7 @@ export class Money {
   static create(raw: number): Money {
     const result = schema.safeParse(raw);
     if (!result.success) {
-      throw new DomainError(
-        ErrorCode.VALIDATION_ERROR,
-        result.error.issues[0]?.message ?? "Invalid money value"
-      );
+      throw new InvalidMoneyError(result.error.issues[0]?.message);
     }
     return new Money(result.data);
   }

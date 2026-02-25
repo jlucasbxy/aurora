@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { ErrorCode } from "@/domain/enums";
-import { DomainError } from "@/domain/errors";
+import { InvalidQuantityError } from "@/domain/errors";
 
 const schema = z.number().int();
 
@@ -14,10 +13,7 @@ export class Quantity {
   static create(raw: number): Quantity {
     const result = schema.safeParse(raw);
     if (!result.success) {
-      throw new DomainError(
-        ErrorCode.VALIDATION_ERROR,
-        result.error.issues[0]?.message ?? "Invalid quantity"
-      );
+      throw new InvalidQuantityError(result.error.issues[0]?.message);
     }
     return new Quantity(result.data);
   }
