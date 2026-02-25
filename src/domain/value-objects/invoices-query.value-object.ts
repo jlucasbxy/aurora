@@ -18,7 +18,7 @@ export interface InvoicesQueryProps {
   clientNumber?: string;
   referenceMonth?: string;
   cursor?: string;
-  limit?: string;
+  limit?: number;
 }
 
 interface ParsedProps {

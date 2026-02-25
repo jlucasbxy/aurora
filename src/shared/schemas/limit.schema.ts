@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const limitSchema = z.coerce
+export const limitSchema = z
   .number()
   .int("Limit must be an integer")
   .min(1, "Limit must be at least 1")
