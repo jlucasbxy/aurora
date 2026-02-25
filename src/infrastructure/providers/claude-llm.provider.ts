@@ -1,9 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { z } from "zod";
 import type { InvoiceExtractionDto } from "@/application/dtos";
 import type { LLMProvider } from "@/application/interfaces/providers";
 import { env } from "@/infrastructure/config/env.config";
 
-const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF and return them as a JSON object with no additional text or markdown.
+const EXTRACTION_PROMPT = `Extract the following fields from this energy bill PDF.
 
 Required fields:
 - clientNumber: the customer number (string)
@@ -11,9 +13,21 @@ Required fields:
 - electricEnergy: object with "qty" (kWh, number) and "value" (BRL, number)
 - sceeEnergy: object with "qty" (kWh, number) and "value" (BRL, number)
 - compensatedEnergyGDI: object with "qty" (kWh, number) and "value" (BRL, number, typically negative)
-- publicLightingContrib: object with "value" (BRL, number)
+- publicLightingContrib: object with "value" (BRL, number)`;
 
-Return only valid JSON, no explanation.`;
+const EnergyItemSchema = z.object({
+  qty: z.number(),
+  value: z.number(),
+});
+
+const InvoiceExtractionSchema = z.object({
+  clientNumber: z.string(),
+  referenceMonth: z.string(),
+  electricEnergy: EnergyItemSchema,
+  sceeEnergy: EnergyItemSchema,
+  compensatedEnergyGDI: EnergyItemSchema,
+  publicLightingContrib: z.object({ value: z.number() }),
+});
 
 export class ClaudeLLMProvider implements LLMProvider {
   private readonly client: Anthropic;
@@ -25,8 +39,8 @@ export class ClaudeLLMProvider implements LLMProvider {
   async extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionDto> {
     const base64Pdf = pdfBuffer.toString("base64");
 
-    const response = await this.client.messages.create({
-      model: "claude-sonnet-4-6",
+    const response = await this.client.messages.parse({
+      model: "claude-haiku-4-5",
       max_tokens: 1024,
       messages: [
         {
@@ -37,23 +51,21 @@ export class ClaudeLLMProvider implements LLMProvider {
               source: {
                 type: "base64",
                 media_type: "application/pdf",
-                data: base64Pdf
-              }
+                data: base64Pdf,
+              },
             },
             {
               type: "text",
-              text: EXTRACTION_PROMPT
-            }
-          ]
-        }
-      ]
+              text: EXTRACTION_PROMPT,
+            },
+          ],
+        },
+      ],
+      output_config: {
+        format: zodOutputFormat(InvoiceExtractionSchema, "invoice_extraction"),
+      },
     });
 
-    const raw = (response.content[0] as { type: string; text: string }).text;
-    const text = raw
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```\s*$/, "")
-      .trim();
-    return JSON.parse(text) as InvoiceExtractionDto;
+    return response.parsed_output;
   }
 }
