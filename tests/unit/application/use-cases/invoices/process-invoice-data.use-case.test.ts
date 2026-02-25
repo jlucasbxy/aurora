@@ -65,6 +65,59 @@ describe("ProcessInvoiceDataUseCase", () => {
     });
   });
 
+  describe("floating-point precision", () => {
+    it("totalValueWithoutGD: 0.1 + 0.2 + 0.3 equals 0.6 exactly, not 0.6000000000000001", () => {
+      const result = useCase.execute(makeBaseInput({
+        electricEnergyValue: 0.1,
+        sceeEnergyValue: 0.2,
+        publicLightingContrib: 0.3,
+      }));
+      expect(result.totalValueWithoutGD).toBe(0.6);
+      // Native JS: 0.1 + 0.2 + 0.3 === 0.6000000000000001
+      expect(0.1 + 0.2 + 0.3).not.toBe(0.6);
+    });
+
+    it("totalValueWithoutGD: 1.1 + 2.2 + 3.3 equals 6.6 exactly", () => {
+      // 1.1 + 2.2 = 3.3000000000000003 in native JS; chaining with Decimal avoids accumulation
+      const result = useCase.execute(makeBaseInput({
+        electricEnergyValue: 1.1,
+        sceeEnergyValue: 2.2,
+        publicLightingContrib: 3.3,
+      }));
+      expect(result.totalValueWithoutGD).toBe(6.6);
+    });
+
+    it("totalValueWithoutGD: 1.1 + 2.2 accumulates float error in native JS", () => {
+      // Demonstrates why Decimal.js is needed for multi-step sums
+      expect(1.1 + 2.2).not.toBe(3.3);
+    });
+
+    it("electricEnergyConsumption: 0.1 + 0.2 rounds to 0", () => {
+      // 0.1 + 0.2 = 0.30000000000000004 in native JS; Decimal gives exact 0.3, both round to 0
+      const result = useCase.execute(makeBaseInput({
+        electricEnergyQty: 0.1,
+        sceeEnergyQty: 0.2,
+      }));
+      expect(result.electricEnergyConsumption).toBe(0);
+    });
+
+    it("electricEnergyConsumption: 100.3 + 200.2 rounds to 301 (exact 300.5 rounds up)", () => {
+      const result = useCase.execute(makeBaseInput({
+        electricEnergyQty: 100.3,
+        sceeEnergyQty: 200.2,
+      }));
+      expect(result.electricEnergyConsumption).toBe(301);
+    });
+
+    it("electricEnergyConsumption: 0.3 + 149.2 rounds to 150 (exact 149.5 rounds up)", () => {
+      const result = useCase.execute(makeBaseInput({
+        electricEnergyQty: 0.3,
+        sceeEnergyQty: 149.2,
+      }));
+      expect(result.electricEnergyConsumption).toBe(150);
+    });
+  });
+
   describe("raw fields passed through unchanged", () => {
     it("preserves clientNumber", () => {
       const result = useCase.execute(makeBaseInput({ clientNumber: "1234567890" }));
