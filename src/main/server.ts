@@ -1,4 +1,5 @@
 import fastifyMultipart from "@fastify/multipart";
+import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import { env } from "@/infrastructure/config/env.config";
 import { errorHandler } from "@/infrastructure/http/middlewares";
@@ -10,6 +11,7 @@ import {
   makeDashboardController,
   makeInvoiceController
 } from "@/main/factories/controllers";
+import { makeRedisClient } from "@/main/factories/redis";
 
 export async function start() {
   const isDev = process.env.NODE_ENV !== "production";
@@ -26,6 +28,15 @@ export async function start() {
   });
 
   app.setErrorHandler(errorHandler);
+
+  await app.register(fastifyRateLimit, {
+    redis: makeRedisClient(),
+    nameSpace: "rl:",
+    errorResponseBuilder: (_req, ctx) => ({
+      code: "RATE_LIMIT_EXCEEDED",
+      message: `Too many requests. Retry in ${ctx.after}.`,
+    }),
+  });
 
   await app.register(fastifyMultipart, {
     limits: {
