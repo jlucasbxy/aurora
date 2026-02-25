@@ -1,5 +1,5 @@
-import type { InvoiceExtractionDto } from "@/application/dtos";
+import type { ZodType } from "zod";
 
 export interface LLMProvider {
-  extractInvoiceData(pdfBuffer: Buffer): Promise<InvoiceExtractionDto>;
+  sendStructuredRequest<T>(document: Buffer, prompt: string, schema: ZodType<T>): Promise<T>;
 }
