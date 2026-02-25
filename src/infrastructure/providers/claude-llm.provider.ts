@@ -3,7 +3,6 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { ZodType } from "zod";
 import { LlmError } from "@/application/interfaces/providers";
 import type { LLMProvider } from "@/application/interfaces/providers";
-import { env } from "@/infrastructure/config/env.config";
 
 const MAX_ATTEMPTS = 2;
 
@@ -15,14 +14,7 @@ function isRetryable(error: unknown): boolean {
 }
 
 export class ClaudeLLMProvider implements LLMProvider {
-  private readonly client: Anthropic;
-
-  constructor() {
-    this.client = new Anthropic({
-      apiKey: env.ANTHROPIC_API_KEY,
-      maxRetries: 0
-    });
-  }
+  constructor(private readonly client: Anthropic) {}
 
   async sendStructuredRequest<T>(document: Buffer, prompt: string, schema: ZodType<T>): Promise<T> {
     const base64Doc = document.toString("base64");
