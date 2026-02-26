@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main/index.ts server",
-    "build": "tsc -p tsconfig.build.json && npx prisma generate",
+    "build": "npx prisma generate",
     "start": "tsx src/main/index.ts server",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
