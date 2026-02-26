@@ -1,7 +1,33 @@
 import type { InvoiceDto } from "@/application/dtos";
-import type { Invoice } from "@/domain/entities/invoice.entity";
+import { Invoice } from "@/domain/entities/invoice.entity";
+import {
+  ClientNumber,
+  Money,
+  Quantity,
+  ReferenceMonth
+} from "@/domain/value-objects";
 
 export class InvoiceMapper {
+  static fromDto(dto: InvoiceDto): Invoice {
+    return Invoice.reconstitute(dto.id, new Date(dto.createdAt), {
+      clientNumber: ClientNumber.reconstitute(dto.clientNumber),
+      referenceMonth: ReferenceMonth.create(dto.referenceMonth),
+      electricEnergyQty: Quantity.reconstitute(dto.electricEnergyQty),
+      electricEnergyValue: Money.reconstitute(dto.electricEnergyValue),
+      sceeEnergyQty: Quantity.reconstitute(dto.sceeEnergyQty),
+      sceeEnergyValue: Money.reconstitute(dto.sceeEnergyValue),
+      compensatedEnergyQty: Quantity.reconstitute(dto.compensatedEnergyQty),
+      compensatedEnergyValue: Money.reconstitute(dto.compensatedEnergyValue),
+      publicLightingContrib: Money.reconstitute(dto.publicLightingContrib),
+      electricEnergyConsumption: Quantity.reconstitute(
+        dto.electricEnergyConsumption
+      ),
+      compensatedEnergy: Quantity.reconstitute(dto.compensatedEnergy),
+      totalValueWithoutGD: Money.reconstitute(dto.totalValueWithoutGD),
+      gdSavings: Money.reconstitute(dto.gdSavings)
+    });
+  }
+
   static toDto(invoice: Invoice): InvoiceDto {
     return {
       id: invoice.id,

@@ -8,7 +8,6 @@ import type {
 } from "@/application/read-models";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
-import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 
 const CACHE_TTL_SECONDS = 300;
 
@@ -52,7 +51,7 @@ export class CachedInvoiceRepository implements InvoiceRepository {
     const cached = await this.redis.get(key);
     if (cached) {
       const dtos: InvoiceDto[] = JSON.parse(cached);
-      return dtos.map((dto) => PrismaInvoiceMapper.toDomain(dto));
+      return dtos.map(InvoiceMapper.fromDto);
     }
 
     const invoices = await this.inner.findAll(query);
