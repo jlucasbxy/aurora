@@ -1,5 +1,8 @@
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
-import type { InvoiceEnergyReadModel, InvoiceFinancialReadModel } from "@/application/read-models";
+import type {
+  InvoiceEnergyReadModel,
+  InvoiceFinancialReadModel
+} from "@/application/read-models";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { Money, Quantity, ReferenceMonth } from "@/domain/value-objects";
@@ -13,7 +16,9 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const rows = await this.prisma.invoice.findMany({
       where: {
         clientNumber: query.clientNumber,
-        ...(query.referenceMonth && { referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue() })
+        ...(query.referenceMonth && {
+          referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue()
+        })
       },
       orderBy: { id: "desc" },
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
@@ -47,14 +52,22 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     return invoice;
   }
 
-  async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel | null> {
+  async aggregateEnergy(
+    query: DashboardQuery
+  ): Promise<InvoiceEnergyReadModel | null> {
+    if (!(await this.clientExists(query.clientNumber))) return null;
+
     const result = await this.prisma.invoice.aggregate({
       where: {
         clientNumber: query.clientNumber,
         ...((query.dateStart || query.dateEnd) && {
           referenceMonth: {
-            ...(query.dateStart && { gte: ReferenceMonth.create(query.dateStart).getValue() }),
-            ...(query.dateEnd && { lte: ReferenceMonth.create(query.dateEnd).getValue() })
+            ...(query.dateStart && {
+              gte: ReferenceMonth.create(query.dateStart).getValue()
+            }),
+            ...(query.dateEnd && {
+              lte: ReferenceMonth.create(query.dateEnd).getValue()
+            })
           }
         })
       },
@@ -64,24 +77,32 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       }
     });
 
-    if (result._sum.electricEnergyConsumption === null && result._sum.compensatedEnergy === null) {
-      return null;
-    }
-
     return {
-      electricEnergyConsumption: Quantity.reconstitute(Number(result._sum.electricEnergyConsumption ?? 0)),
-      compensatedEnergy: Quantity.reconstitute(Number(result._sum.compensatedEnergy ?? 0))
+      electricEnergyConsumption: Quantity.reconstitute(
+        Number(result._sum.electricEnergyConsumption ?? 0)
+      ),
+      compensatedEnergy: Quantity.reconstitute(
+        Number(result._sum.compensatedEnergy ?? 0)
+      )
     };
   }
 
-  async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel | null> {
+  async aggregateFinancial(
+    query: DashboardQuery
+  ): Promise<InvoiceFinancialReadModel | null> {
+    if (!(await this.clientExists(query.clientNumber))) return null;
+
     const result = await this.prisma.invoice.aggregate({
       where: {
         clientNumber: query.clientNumber,
         ...((query.dateStart || query.dateEnd) && {
           referenceMonth: {
-            ...(query.dateStart && { gte: ReferenceMonth.create(query.dateStart).getValue() }),
-            ...(query.dateEnd && { lte: ReferenceMonth.create(query.dateEnd).getValue() })
+            ...(query.dateStart && {
+              gte: ReferenceMonth.create(query.dateStart).getValue()
+            }),
+            ...(query.dateEnd && {
+              lte: ReferenceMonth.create(query.dateEnd).getValue()
+            })
           }
         })
       },
@@ -91,13 +112,19 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       }
     });
 
-    if (result._sum.totalValueWithoutGD === null && result._sum.gdSavings === null) {
-      return null;
-    }
-
     return {
-      totalValueWithoutGD: Money.reconstitute(Number(result._sum.totalValueWithoutGD ?? 0)),
+      totalValueWithoutGD: Money.reconstitute(
+        Number(result._sum.totalValueWithoutGD ?? 0)
+      ),
       gdSavings: Money.reconstitute(Number(result._sum.gdSavings ?? 0))
     };
+  }
+
+  private async clientExists(clientNumber: string): Promise<boolean> {
+    const record = await this.prisma.invoice.findFirst({
+      where: { clientNumber },
+      select: { id: true }
+    });
+    return record !== null;
   }
 }
