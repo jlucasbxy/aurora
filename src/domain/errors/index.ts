@@ -5,3 +5,4 @@ export { InvalidReferenceMonthError } from "@/domain/errors/invalid-reference-mo
 export { InvalidClientNumberError } from "@/domain/errors/invalid-client-number.error";
 export { InvalidDashboardQueryError } from "@/domain/errors/invalid-dashboard-query.error";
 export { InvalidInvoicesQueryError } from "@/domain/errors/invalid-invoices-query.error";
+export { ResourceNotFoundError } from "@/domain/errors/resource-not-found.error";

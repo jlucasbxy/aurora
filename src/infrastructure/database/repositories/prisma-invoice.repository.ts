@@ -47,7 +47,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     return invoice;
   }
 
-  async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel> {
+  async aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel | null> {
     const result = await this.prisma.invoice.aggregate({
       where: {
         clientNumber: query.clientNumber,
@@ -63,13 +63,18 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         compensatedEnergy: true
       }
     });
+
+    if (result._sum.electricEnergyConsumption === null && result._sum.compensatedEnergy === null) {
+      return null;
+    }
+
     return {
       electricEnergyConsumption: Quantity.reconstitute(Number(result._sum.electricEnergyConsumption ?? 0)),
       compensatedEnergy: Quantity.reconstitute(Number(result._sum.compensatedEnergy ?? 0))
     };
   }
 
-  async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel> {
+  async aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel | null> {
     const result = await this.prisma.invoice.aggregate({
       where: {
         clientNumber: query.clientNumber,
@@ -85,6 +90,11 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         gdSavings: true
       }
     });
+
+    if (result._sum.totalValueWithoutGD === null && result._sum.gdSavings === null) {
+      return null;
+    }
+
     return {
       totalValueWithoutGD: Money.reconstitute(Number(result._sum.totalValueWithoutGD ?? 0)),
       gdSavings: Money.reconstitute(Number(result._sum.gdSavings ?? 0))

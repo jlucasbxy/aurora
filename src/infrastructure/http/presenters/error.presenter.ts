@@ -11,7 +11,8 @@ const STATUS_MAP: Record<ErrorCode, number> = {
   [ErrorCode.INVALID_CLIENT_NUMBER]: 400,
   [ErrorCode.INVALID_DASHBOARD_QUERY]: 400,
   [ErrorCode.INVALID_INVOICES_QUERY]: 400,
-  [ErrorCode.FILE_TOO_LARGE]: 413
+  [ErrorCode.FILE_TOO_LARGE]: 413,
+  [ErrorCode.RESOURCE_NOT_FOUND]: 404
 };
 
 export function httpStatusFor(code: ErrorCode): number {

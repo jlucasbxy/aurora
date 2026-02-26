@@ -5,6 +5,6 @@ import type { InvoiceEnergyReadModel, InvoiceFinancialReadModel } from "@/applic
 export interface InvoiceRepository {
   findAll(query: InvoicesQuery): Promise<Invoice[]>;
   save(invoice: Invoice): Promise<Invoice>;
-  aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel>;
-  aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel>;
+  aggregateEnergy(query: DashboardQuery): Promise<InvoiceEnergyReadModel | null>;
+  aggregateFinancial(query: DashboardQuery): Promise<InvoiceFinancialReadModel | null>;
 }
