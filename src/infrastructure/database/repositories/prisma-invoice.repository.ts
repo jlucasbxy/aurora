@@ -16,9 +16,7 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     const rows = await this.prisma.invoice.findMany({
       where: {
         clientNumber: query.clientNumber,
-        ...(query.referenceMonth && {
-          referenceMonth: ReferenceMonth.create(query.referenceMonth).getValue()
-        })
+        ...(query.referenceMonth && { referenceMonth: query.referenceMonth })
       },
       orderBy: { id: "desc" },
       ...(query.cursor && { cursor: { id: query.cursor }, skip: 1 }),
