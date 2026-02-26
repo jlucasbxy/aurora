@@ -57,11 +57,10 @@ function buildDashboardCacheKey(
   return `invoices:${query.clientNumber}:dashboard:${type}:${dateStart}:${dateEnd}`;
 }
 
-async function invalidateClientCache(
+async function invalidateCacheByPattern(
   redis: Redis,
-  clientNumber: string
+  pattern: string
 ): Promise<void> {
-  const pattern = `invoices:${clientNumber}:*`;
   let cursor = "0";
   do {
     const [nextCursor, keys] = await redis.scan(
@@ -76,6 +75,17 @@ async function invalidateClientCache(
       await redis.unlink(...keys);
     }
   } while (cursor !== "0");
+}
+
+async function invalidateClientCache(
+  redis: Redis,
+  clientNumber: string
+): Promise<void> {
+  await invalidateCacheByPattern(redis, `invoices:${clientNumber}:*`);
+}
+
+async function invalidateGlobalCache(redis: Redis): Promise<void> {
+  await invalidateCacheByPattern(redis, `invoices:all:*`);
 }
 
 export class CachedInvoiceRepository implements InvoiceRepository {
@@ -106,7 +116,10 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
   async save(invoice: Invoice): Promise<Invoice> {
     const saved = await this.inner.save(invoice);
-    await invalidateClientCache(this.redis, saved.clientNumber.getValue());
+    await Promise.all([
+      invalidateClientCache(this.redis, saved.clientNumber.getValue()),
+      invalidateGlobalCache(this.redis)
+    ]);
     return saved;
   }
 
