@@ -7,8 +7,8 @@ import {
   ReferenceMonth
 } from "@/domain/value-objects";
 
-export class InvoiceMapper {
-  static fromDto(dto: InvoiceDto): Invoice {
+export const InvoiceMapper = {
+  fromDto(dto: InvoiceDto): Invoice {
     return Invoice.reconstitute(dto.id, new Date(dto.createdAt), {
       clientNumber: ClientNumber.reconstitute(dto.clientNumber),
       referenceMonth: ReferenceMonth.create(dto.referenceMonth),
@@ -26,9 +26,9 @@ export class InvoiceMapper {
       totalValueWithoutGD: Money.reconstitute(dto.totalValueWithoutGD),
       gdSavings: Money.reconstitute(dto.gdSavings)
     });
-  }
+  },
 
-  static toDto(invoice: Invoice): InvoiceDto {
+  toDto(invoice: Invoice): InvoiceDto {
     return {
       id: invoice.id,
       clientNumber: invoice.clientNumber.getValue(),
@@ -47,4 +47,4 @@ export class InvoiceMapper {
       createdAt: invoice.createdAt.toISOString()
     };
   }
-}
+};

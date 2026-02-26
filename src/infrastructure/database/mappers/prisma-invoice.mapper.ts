@@ -7,8 +7,8 @@ import {
 } from "@/domain/value-objects";
 import type { InvoiceModel } from "@/infrastructure/database/prisma/generated/prisma/models/Invoice";
 
-export class PrismaInvoiceMapper {
-  static toDomain(row: InvoiceModel): Invoice {
+export const PrismaInvoiceMapper = {
+  toDomain(row: InvoiceModel): Invoice {
     return Invoice.reconstitute(row.id, row.createdAt, {
       clientNumber: ClientNumber.reconstitute(row.clientNumber),
       referenceMonth: ReferenceMonth.reconstitute(row.referenceMonth),
@@ -31,4 +31,4 @@ export class PrismaInvoiceMapper {
       gdSavings: Money.reconstitute(Number(row.gdSavings))
     });
   }
-}
+};
