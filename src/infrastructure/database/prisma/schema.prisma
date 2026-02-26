@@ -32,5 +32,4 @@ model Invoice {
 
   @@index([clientNumber])
   @@index([clientNumber, referenceMonth])
-  @@index([referenceMonth])
 }
