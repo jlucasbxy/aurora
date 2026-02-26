@@ -44,6 +44,9 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         totalValueWithoutGD: invoice.totalValueWithoutGD.getValue(),
         gdSavings: invoice.gdSavings.getValue(),
         createdAt: invoice.createdAt
+      },
+      select: {
+        id: true
       }
     });
 
