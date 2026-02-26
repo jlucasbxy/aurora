@@ -22,7 +22,7 @@ export class ClaudeLLMProvider implements LLMProvider {
     schema: ZodType<T>
   ): Promise<T> {
     const base64Doc = document.toString("base64");
-    let lastError: unknown;
+    let _lastError: unknown;
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
@@ -54,7 +54,7 @@ export class ClaudeLLMProvider implements LLMProvider {
         });
 
         if (!response.parsed_output) {
-          lastError = new Error("Model returned no structured output");
+          _lastError = new Error("Model returned no structured output");
           continue;
         }
 
@@ -71,7 +71,7 @@ export class ClaudeLLMProvider implements LLMProvider {
           );
         }
 
-        lastError = error;
+        _lastError = error;
       }
     }
 
