@@ -6,7 +6,6 @@ const envSchema = z.object({
   HOST: z.ipv4().default("0.0.0.0"),
   DATABASE_URL: z.url(),
   REDIS_URL: z.url(),
-  REDIS_PASSWORD: z.string(),
   ANTHROPIC_API_KEY: z.string()
 });
 
