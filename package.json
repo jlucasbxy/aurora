@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/main/index.ts server",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/main/index.js server",
+    "start": "tsx src/main/index.ts server",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "format": "biome format --write .",
