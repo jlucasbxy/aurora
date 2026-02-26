@@ -3,15 +3,15 @@ import { HttpError } from "@/infrastructure/http/errors";
 import type { Parser } from ".";
 
 export class MultipartFileParser
-  implements Parser<Promise<Buffer[]>, MultipartFile>
+  implements Parser<Promise<Buffer[]>, MultipartFile | undefined>
 {
-  async parse(file: MultipartFile): Promise<Buffer[]> {
-    const chunks: Buffer[] = [];
-    const fileStream = file.file;
-
-    if (!fileStream) {
+  async parse(file: MultipartFile | undefined): Promise<Buffer[]> {
+    if (!file || !file.file) {
       throw new HttpError(400, "NO_FILE_PROVIDED", "No file provided");
     }
+
+    const chunks: Buffer[] = [];
+    const fileStream = file.file;
 
     if (fileStream.truncated) {
       throw new HttpError(

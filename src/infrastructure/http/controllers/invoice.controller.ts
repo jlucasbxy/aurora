@@ -10,7 +10,7 @@ export class InvoiceController {
     private readonly invoiceQueryParser: Parser<QueryInvoiceDto>,
     private readonly multipartFileParser: Parser<
       Promise<Buffer[]>,
-      MultipartFile
+      MultipartFile | undefined
     >
   ) {}
 
@@ -22,7 +22,7 @@ export class InvoiceController {
 
   async upload(request: FastifyRequest, reply: FastifyReply) {
     const file = await request.file();
-    const chunks = await this.multipartFileParser.parse(file!);
+    const chunks = await this.multipartFileParser.parse(file);
     const pdfBuffer = Buffer.concat(chunks);
     const invoice = await this.invoiceService.processAndSave(pdfBuffer);
     return reply.status(201).send(invoice);
