@@ -5,7 +5,7 @@ import type {
 } from "@/application/read-models";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
-import { Money, Quantity, ReferenceMonth } from "@/domain/value-objects";
+import { Money, Quantity } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
 
@@ -62,12 +62,8 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         clientNumber: query.clientNumber,
         ...((query.dateStart || query.dateEnd) && {
           referenceMonth: {
-            ...(query.dateStart && {
-              gte: ReferenceMonth.create(query.dateStart).getValue()
-            }),
-            ...(query.dateEnd && {
-              lte: ReferenceMonth.create(query.dateEnd).getValue()
-            })
+            ...(query.dateStart && { gte: query.dateStart }),
+            ...(query.dateEnd && { lte: query.dateEnd })
           }
         })
       },
@@ -97,12 +93,8 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
         clientNumber: query.clientNumber,
         ...((query.dateStart || query.dateEnd) && {
           referenceMonth: {
-            ...(query.dateStart && {
-              gte: ReferenceMonth.create(query.dateStart).getValue()
-            }),
-            ...(query.dateEnd && {
-              lte: ReferenceMonth.create(query.dateEnd).getValue()
-            })
+            ...(query.dateStart && { gte: query.dateStart }),
+            ...(query.dateEnd && { lte: query.dateEnd })
           }
         })
       },

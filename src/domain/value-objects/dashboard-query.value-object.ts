@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { InvalidDashboardQueryError } from "@/domain/errors";
+import { ReferenceMonth } from "@/domain/value-objects/reference-month.value-object";
 import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";
 
 const schema = z.object({
@@ -14,21 +15,15 @@ export interface DashboardQueryProps {
   dateEnd?: string;
 }
 
-interface ParsedProps {
-  clientNumber: string;
-  dateStart?: string;
-  dateEnd?: string;
-}
-
 export class DashboardQuery {
   readonly clientNumber: string;
-  readonly dateStart?: string;
-  readonly dateEnd?: string;
+  readonly dateStart?: Date;
+  readonly dateEnd?: Date;
 
-  private constructor(props: ParsedProps) {
-    this.clientNumber = props.clientNumber;
-    this.dateStart = props.dateStart;
-    this.dateEnd = props.dateEnd;
+  private constructor(clientNumber: string, dateStart?: Date, dateEnd?: Date) {
+    this.clientNumber = clientNumber;
+    this.dateStart = dateStart;
+    this.dateEnd = dateEnd;
   }
 
   static create(props: DashboardQueryProps): DashboardQuery {
@@ -36,6 +31,11 @@ export class DashboardQuery {
     if (!result.success) {
       throw new InvalidDashboardQueryError(result.error.issues[0]?.message);
     }
-    return new DashboardQuery(result.data);
+    const { clientNumber, dateStart, dateEnd } = result.data;
+    return new DashboardQuery(
+      clientNumber,
+      dateStart ? ReferenceMonth.create(dateStart).getValue() : undefined,
+      dateEnd ? ReferenceMonth.create(dateEnd).getValue() : undefined
+    );
   }
 }
