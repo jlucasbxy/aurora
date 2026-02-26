@@ -10,7 +10,6 @@ export function errorHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  console.log(error);
   if ("statusCode" in error && error.statusCode === 413) {
     const body = toResponse(
       ErrorCode.FILE_TOO_LARGE,
@@ -20,7 +19,9 @@ export function errorHandler(
   }
 
   if (error instanceof HttpError) {
-    return reply.status(error.statusCode).send({ code: error.code, message: error.message });
+    return reply
+      .status(error.statusCode)
+      .send({ code: error.code, message: error.message });
   }
 
   if (error instanceof DomainError) {

@@ -1,3 +1,5 @@
+import fastifyCors from "@fastify/cors";
+import fastifyHelmet from "@fastify/helmet";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
@@ -29,13 +31,16 @@ export async function start() {
 
   app.setErrorHandler(errorHandler);
 
+  await app.register(fastifyHelmet);
+  await app.register(fastifyCors, { origin: false });
+
   await app.register(fastifyRateLimit, {
     redis: makeRedisClient(),
     nameSpace: "rl:",
     errorResponseBuilder: (_req, ctx) => ({
       code: "RATE_LIMIT_EXCEEDED",
-      message: `Too many requests. Retry in ${ctx.after}.`,
-    }),
+      message: `Too many requests. Retry in ${ctx.after}.`
+    })
   });
 
   await app.register(fastifyMultipart, {

@@ -1,16 +1,45 @@
 import type { Redis } from "ioredis";
-import type { InvoiceDto } from "@/application/dtos";
+import { z } from "zod";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import { InvoiceMapper } from "@/application/mappers";
 import type {
   InvoiceEnergyReadModel,
   InvoiceFinancialReadModel
 } from "@/application/read-models";
-import { Invoice } from "@/domain/entities/invoice.entity";
-import { Money, Quantity } from "@/domain/value-objects";
+import type { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
+import { Money, Quantity } from "@/domain/value-objects";
 
 const CACHE_TTL_SECONDS = 300;
+
+const invoiceDtoSchema = z.object({
+  id: z.string(),
+  clientNumber: z.string(),
+  referenceMonth: z.string(),
+  electricEnergyQty: z.number(),
+  electricEnergyValue: z.number(),
+  sceeEnergyQty: z.number(),
+  sceeEnergyValue: z.number(),
+  compensatedEnergyQty: z.number(),
+  compensatedEnergyValue: z.number(),
+  publicLightingContrib: z.number(),
+  electricEnergyConsumption: z.number(),
+  compensatedEnergy: z.number(),
+  totalValueWithoutGD: z.number(),
+  gdSavings: z.number(),
+  createdAt: z.string()
+});
+const invoiceDtoArraySchema = z.array(invoiceDtoSchema);
+
+const energyCacheSchema = z.object({
+  electricEnergyConsumption: z.number(),
+  compensatedEnergy: z.number()
+});
+
+const financialCacheSchema = z.object({
+  totalValueWithoutGD: z.number(),
+  gdSavings: z.number()
+});
 
 function buildListCacheKey(query: InvoicesQuery): string {
   const clientNumber = query.clientNumber ?? "all";
@@ -60,8 +89,10 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
     const cached = await this.redis.get(key);
     if (cached) {
-      const dtos: InvoiceDto[] = JSON.parse(cached);
-      return dtos.map(InvoiceMapper.fromDto);
+      const parsed = invoiceDtoArraySchema.safeParse(JSON.parse(cached));
+      if (parsed.success) {
+        return parsed.data.map(InvoiceMapper.fromDto);
+      }
     }
 
     const invoices = await this.inner.findAll(query);
@@ -86,12 +117,17 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
     const cached = await this.redis.get(key);
     if (cached) {
-      const dto: { electricEnergyConsumption: number; compensatedEnergy: number } =
-        JSON.parse(cached);
-      return {
-        electricEnergyConsumption: Quantity.reconstitute(dto.electricEnergyConsumption),
-        compensatedEnergy: Quantity.reconstitute(dto.compensatedEnergy)
-      };
+      const parsed = energyCacheSchema.safeParse(JSON.parse(cached));
+      if (parsed.success) {
+        return {
+          electricEnergyConsumption: Quantity.reconstitute(
+            parsed.data.electricEnergyConsumption
+          ),
+          compensatedEnergy: Quantity.reconstitute(
+            parsed.data.compensatedEnergy
+          )
+        };
+      }
     }
 
     const result = await this.inner.aggregateEnergy(query);
@@ -100,7 +136,8 @@ export class CachedInvoiceRepository implements InvoiceRepository {
         key,
         CACHE_TTL_SECONDS,
         JSON.stringify({
-          electricEnergyConsumption: result.electricEnergyConsumption.getValue(),
+          electricEnergyConsumption:
+            result.electricEnergyConsumption.getValue(),
           compensatedEnergy: result.compensatedEnergy.getValue()
         })
       );
@@ -115,12 +152,15 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
     const cached = await this.redis.get(key);
     if (cached) {
-      const dto: { totalValueWithoutGD: number; gdSavings: number } =
-        JSON.parse(cached);
-      return {
-        totalValueWithoutGD: Money.reconstitute(dto.totalValueWithoutGD),
-        gdSavings: Money.reconstitute(dto.gdSavings)
-      };
+      const parsed = financialCacheSchema.safeParse(JSON.parse(cached));
+      if (parsed.success) {
+        return {
+          totalValueWithoutGD: Money.reconstitute(
+            parsed.data.totalValueWithoutGD
+          ),
+          gdSavings: Money.reconstitute(parsed.data.gdSavings)
+        };
+      }
     }
 
     const result = await this.inner.aggregateFinancial(query);
