@@ -7,22 +7,32 @@ import type {
   InvoiceFinancialReadModel
 } from "@/application/read-models";
 import { Invoice } from "@/domain/entities/invoice.entity";
+import { Money, Quantity } from "@/domain/value-objects";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 
 const CACHE_TTL_SECONDS = 300;
 
-function buildCacheKey(query: InvoicesQuery): string {
+function buildListCacheKey(query: InvoicesQuery): string {
   const clientNumber = query.clientNumber ?? "all";
   const referenceMonth = query.referenceMonth?.toISOString() ?? "all";
   const cursor = query.cursor ?? "start";
-  return `invoices:list:${clientNumber}:${referenceMonth}:${cursor}:${query.limit}`;
+  return `invoices:${clientNumber}:list:${referenceMonth}:${cursor}:${query.limit}`;
+}
+
+function buildDashboardCacheKey(
+  type: "energy" | "financial",
+  query: DashboardQuery
+): string {
+  const dateStart = query.dateStart?.toISOString() ?? "all";
+  const dateEnd = query.dateEnd?.toISOString() ?? "all";
+  return `invoices:${query.clientNumber}:dashboard:${type}:${dateStart}:${dateEnd}`;
 }
 
 async function invalidateClientCache(
   redis: Redis,
   clientNumber: string
 ): Promise<void> {
-  const pattern = `invoices:list:${clientNumber}:*`;
+  const pattern = `invoices:${clientNumber}:*`;
   let cursor = "0";
   do {
     const [nextCursor, keys] = await redis.scan(
@@ -46,7 +56,7 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   ) {}
 
   async findAll(query: InvoicesQuery): Promise<Invoice[]> {
-    const key = buildCacheKey(query);
+    const key = buildListCacheKey(query);
 
     const cached = await this.redis.get(key);
     if (cached) {
@@ -69,15 +79,61 @@ export class CachedInvoiceRepository implements InvoiceRepository {
     return saved;
   }
 
-  aggregateEnergy(
+  async aggregateEnergy(
     query: DashboardQuery
   ): Promise<InvoiceEnergyReadModel | null> {
-    return this.inner.aggregateEnergy(query);
+    const key = buildDashboardCacheKey("energy", query);
+
+    const cached = await this.redis.get(key);
+    if (cached) {
+      const dto: { electricEnergyConsumption: number; compensatedEnergy: number } =
+        JSON.parse(cached);
+      return {
+        electricEnergyConsumption: Quantity.reconstitute(dto.electricEnergyConsumption),
+        compensatedEnergy: Quantity.reconstitute(dto.compensatedEnergy)
+      };
+    }
+
+    const result = await this.inner.aggregateEnergy(query);
+    if (result) {
+      await this.redis.setex(
+        key,
+        CACHE_TTL_SECONDS,
+        JSON.stringify({
+          electricEnergyConsumption: result.electricEnergyConsumption.getValue(),
+          compensatedEnergy: result.compensatedEnergy.getValue()
+        })
+      );
+    }
+    return result;
   }
 
-  aggregateFinancial(
+  async aggregateFinancial(
     query: DashboardQuery
   ): Promise<InvoiceFinancialReadModel | null> {
-    return this.inner.aggregateFinancial(query);
+    const key = buildDashboardCacheKey("financial", query);
+
+    const cached = await this.redis.get(key);
+    if (cached) {
+      const dto: { totalValueWithoutGD: number; gdSavings: number } =
+        JSON.parse(cached);
+      return {
+        totalValueWithoutGD: Money.reconstitute(dto.totalValueWithoutGD),
+        gdSavings: Money.reconstitute(dto.gdSavings)
+      };
+    }
+
+    const result = await this.inner.aggregateFinancial(query);
+    if (result) {
+      await this.redis.setex(
+        key,
+        CACHE_TTL_SECONDS,
+        JSON.stringify({
+          totalValueWithoutGD: result.totalValueWithoutGD.getValue(),
+          gdSavings: result.gdSavings.getValue()
+        })
+      );
+    }
+    return result;
   }
 }
