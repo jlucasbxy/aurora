@@ -42,10 +42,10 @@ export class ReferenceMonth {
     if (!result.success) {
       throw new InvalidReferenceMonthError(result.error.issues[0]?.message);
     }
-    const [monthAbbr, yearStr] = result.data.split("/");
-    const month = MONTH_MAP[monthAbbr!];
-    const year = parseInt(yearStr!, 10);
-    const date = new Date(Date.UTC(year, month!, 1));
+    const [monthAbbr, yearStr] = result.data.split("/") as [string, string];
+    const month = MONTH_MAP[monthAbbr] as number;
+    const year = parseInt(yearStr, 10);
+    const date = new Date(Date.UTC(year, month, 1));
     return new ReferenceMonth(date);
   }
 
@@ -58,7 +58,7 @@ export class ReferenceMonth {
   }
 
   toDisplay(): string {
-    const month = MONTH_NAMES[this.value.getUTCMonth()]!;
+    const month = MONTH_NAMES[this.value.getUTCMonth()] as string;
     const year = this.value.getUTCFullYear();
     return `${month}/${year}`;
   }
