@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ExtractInvoiceDataUseCase } from "@/application/use-cases/invoices/extract-invoice-data.use-case";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { InvoiceExtractionDto } from "@/application/dtos";
 import type { LLMProvider } from "@/application/interfaces/providers";
 import { LlmError } from "@/application/interfaces/providers";
-import { DomainError } from "@/domain/errors";
+import { ExtractInvoiceDataUseCase } from "@/application/use-cases/invoices/extract-invoice-data.use-case";
 import { ErrorCode } from "@/domain/enums";
-import type { InvoiceExtractionDto } from "@/application/dtos";
+import { DomainError } from "@/domain/errors";
 
 const mockExtractionDto: InvoiceExtractionDto = {
   clientNumber: "7202788900",
@@ -28,7 +28,9 @@ describe("ExtractInvoiceDataUseCase", () => {
   });
 
   it("returns InvoiceExtractionDto when LLM resolves successfully", async () => {
-    vi.mocked(mockLlmProvider.sendStructuredRequest).mockResolvedValue(mockExtractionDto);
+    vi.mocked(mockLlmProvider.sendStructuredRequest).mockResolvedValue(
+      mockExtractionDto
+    );
 
     const useCase = new ExtractInvoiceDataUseCase(mockLlmProvider);
     const result = await useCase.execute(Buffer.from("pdf-content"));
@@ -58,16 +60,21 @@ describe("ExtractInvoiceDataUseCase", () => {
 
     await expect(useCase.execute(Buffer.from("pdf-content"))).rejects.toSatisfy(
       (err: unknown) =>
-        err instanceof DomainError && err.code === ErrorCode.INTERNAL_SERVER_ERROR
+        err instanceof DomainError &&
+        err.code === ErrorCode.INTERNAL_SERVER_ERROR
     );
   });
 
   it("re-throws non-LlmError errors unchanged", async () => {
     const unexpectedError = new Error("Unexpected network failure");
-    vi.mocked(mockLlmProvider.sendStructuredRequest).mockRejectedValue(unexpectedError);
+    vi.mocked(mockLlmProvider.sendStructuredRequest).mockRejectedValue(
+      unexpectedError
+    );
 
     const useCase = new ExtractInvoiceDataUseCase(mockLlmProvider);
 
-    await expect(useCase.execute(Buffer.from("pdf-content"))).rejects.toBe(unexpectedError);
+    await expect(useCase.execute(Buffer.from("pdf-content"))).rejects.toBe(
+      unexpectedError
+    );
   });
 });

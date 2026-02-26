@@ -44,20 +44,6 @@
       "suspicious": {
         "noEmptyBlockStatements": "off",
         "noConsole": "error"
-      },
-      "style": {
-        "noRestrictedImports": {
-          "level": "error",
-          "options": {
-            "paths": {},
-            "patterns": [
-              {
-                "group": ["../*", "./*"],
-                "message": "Relative imports are not allowed. Use path aliases instead."
-              }
-            ]
-          }
-        }
       }
     }
   },

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { InvoiceExtractionDto } from "@/application/dtos";
-import { LlmError } from "@/application/interfaces/providers";
 import type { LLMProvider } from "@/application/interfaces/providers";
+import { LlmError } from "@/application/interfaces/providers";
 import { ErrorCode } from "@/domain/enums";
 import { DomainError } from "@/domain/errors";
 import { clientNumberSchema, referenceMonthSchema } from "@/shared/schemas";

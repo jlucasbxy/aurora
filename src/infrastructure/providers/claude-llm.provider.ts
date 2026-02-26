@@ -1,8 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { ZodType } from "zod";
-import { LlmError } from "@/application/interfaces/providers";
 import type { LLMProvider } from "@/application/interfaces/providers";
+import { LlmError } from "@/application/interfaces/providers";
 
 const MAX_ATTEMPTS = 2;
 
@@ -16,7 +16,11 @@ function isRetryable(error: unknown): boolean {
 export class ClaudeLLMProvider implements LLMProvider {
   constructor(private readonly client: Anthropic) {}
 
-  async sendStructuredRequest<T>(document: Buffer, prompt: string, schema: ZodType<T>): Promise<T> {
+  async sendStructuredRequest<T>(
+    document: Buffer,
+    prompt: string,
+    schema: ZodType<T>
+  ): Promise<T> {
     const base64Doc = document.toString("base64");
     let lastError: unknown;
 
@@ -61,7 +65,10 @@ export class ClaudeLLMProvider implements LLMProvider {
         }
 
         if (!isRetryable(error)) {
-          throw new LlmError("EXTRACTION_FAILED", "Failed to extract data from document");
+          throw new LlmError(
+            "EXTRACTION_FAILED",
+            "Failed to extract data from document"
+          );
         }
 
         lastError = error;

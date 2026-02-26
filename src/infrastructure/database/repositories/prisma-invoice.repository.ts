@@ -3,7 +3,7 @@ import type {
   InvoiceEnergyReadModel,
   InvoiceFinancialReadModel
 } from "@/application/read-models";
-import { Invoice } from "@/domain/entities/invoice.entity";
+import type { Invoice } from "@/domain/entities/invoice.entity";
 import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { Money, Quantity } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";

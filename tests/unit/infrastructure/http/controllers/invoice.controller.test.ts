@@ -1,13 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { InvoiceController } from "@/infrastructure/http/controllers/invoice.controller";
-import type { InvoiceService } from "@/application/interfaces/services";
-import type { Parser } from "@/infrastructure/http/parsers";
-import type { QueryInvoiceDto } from "@/application/dtos";
 import type { MultipartFile } from "@fastify/multipart";
-import { DomainError } from "@/domain/errors";
-import { ErrorCode } from "@/domain/enums";
-import type { InvoiceDto } from "@/application/dtos";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { InvoiceDto, QueryInvoiceDto } from "@/application/dtos";
+import type { InvoiceService } from "@/application/interfaces/services";
+import { ErrorCode } from "@/domain/enums";
+import { DomainError } from "@/domain/errors";
+import { InvoiceController } from "@/infrastructure/http/controllers/invoice.controller";
+import type { Parser } from "@/infrastructure/http/parsers";
 
 const mockInvoiceDto: InvoiceDto = {
   id: "01944b1a-0000-7000-8000-000000000001",
@@ -43,7 +42,10 @@ describe("InvoiceController", () => {
 
   const mockSend = vi.fn();
   const mockStatus = vi.fn().mockReturnValue({ send: mockSend });
-  const mockReply = { status: mockStatus, send: mockSend } as unknown as FastifyReply;
+  const mockReply = {
+    status: mockStatus,
+    send: mockSend
+  } as unknown as FastifyReply;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -59,7 +61,9 @@ describe("InvoiceController", () => {
     } as unknown as FastifyRequest;
 
     vi.mocked(mockMultipartFileParser.parse).mockResolvedValue([chunk]);
-    vi.mocked(mockInvoiceService.processAndSave).mockResolvedValue(mockInvoiceDto);
+    vi.mocked(mockInvoiceService.processAndSave).mockResolvedValue(
+      mockInvoiceDto
+    );
 
     const controller = new InvoiceController(
       mockInvoiceService,
@@ -76,7 +80,11 @@ describe("InvoiceController", () => {
 
   it("list: parses query, calls getAll, and replies 200 with result", async () => {
     const parsedQuery: QueryInvoiceDto = { clientNumber: "7202788900" };
-    const paginatedResult = { data: [mockInvoiceDto], nextCursor: null, hasNextPage: false };
+    const paginatedResult = {
+      data: [mockInvoiceDto],
+      nextCursor: null,
+      hasNextPage: false
+    };
     const mockRequest = { query: {} } as unknown as FastifyRequest;
 
     vi.mocked(mockInvoiceQueryParser.parse).mockReturnValue(parsedQuery);
@@ -102,7 +110,10 @@ describe("InvoiceController", () => {
       file: vi.fn().mockResolvedValue(mockFile),
       query: {}
     } as unknown as FastifyRequest;
-    const domainError = new DomainError(ErrorCode.RATE_LIMIT_EXCEEDED, "LLM rate limited");
+    const domainError = new DomainError(
+      ErrorCode.RATE_LIMIT_EXCEEDED,
+      "LLM rate limited"
+    );
 
     vi.mocked(mockMultipartFileParser.parse).mockResolvedValue([chunk]);
     vi.mocked(mockInvoiceService.processAndSave).mockRejectedValue(domainError);
@@ -113,6 +124,8 @@ describe("InvoiceController", () => {
       mockMultipartFileParser
     );
 
-    await expect(controller.upload(mockRequest, mockReply)).rejects.toBe(domainError);
+    await expect(controller.upload(mockRequest, mockReply)).rejects.toBe(
+      domainError
+    );
   });
 });

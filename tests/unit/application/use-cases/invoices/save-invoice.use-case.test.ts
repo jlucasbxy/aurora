@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { SaveInvoiceUseCase } from "@/application/use-cases/invoices/save-invoice.use-case";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import type { ProcessedInvoiceData } from "@/application/use-cases/invoices/process-invoice-data.use-case";
+import { SaveInvoiceUseCase } from "@/application/use-cases/invoices/save-invoice.use-case";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
   ClientNumber,
@@ -37,7 +37,9 @@ const buildInvoice = () =>
     compensatedEnergyQty: Quantity.create(fixture.compensatedEnergyQty),
     compensatedEnergyValue: Money.create(fixture.compensatedEnergyValue),
     publicLightingContrib: Money.create(fixture.publicLightingContrib),
-    electricEnergyConsumption: Quantity.create(fixture.electricEnergyConsumption),
+    electricEnergyConsumption: Quantity.create(
+      fixture.electricEnergyConsumption
+    ),
     compensatedEnergy: Quantity.create(fixture.compensatedEnergy),
     totalValueWithoutGD: Money.create(fixture.totalValueWithoutGD),
     gdSavings: Money.create(fixture.gdSavings)
@@ -73,11 +75,16 @@ describe("SaveInvoiceUseCase", () => {
     const useCase = new SaveInvoiceUseCase(mockRepo);
     await useCase.execute(fixture);
 
-    const passedInvoice = vi.mocked(mockRepo.save).mock.calls[0]?.[0] as Invoice;
+    const passedInvoice = vi.mocked(mockRepo.save).mock
+      .calls[0]?.[0] as Invoice;
     expect(passedInvoice).toBeInstanceOf(Invoice);
     expect(passedInvoice.clientNumber.getValue()).toBe(fixture.clientNumber);
-    expect(passedInvoice.referenceMonth.toDisplay()).toBe(fixture.referenceMonth);
-    expect(passedInvoice.electricEnergyConsumption.getValue()).toBe(fixture.electricEnergyConsumption);
+    expect(passedInvoice.referenceMonth.toDisplay()).toBe(
+      fixture.referenceMonth
+    );
+    expect(passedInvoice.electricEnergyConsumption.getValue()).toBe(
+      fixture.electricEnergyConsumption
+    );
   });
 
   it("returns a DTO with correct field values from the saved entity", async () => {
@@ -96,7 +103,9 @@ describe("SaveInvoiceUseCase", () => {
     expect(dto.compensatedEnergyQty).toBe(fixture.compensatedEnergyQty);
     expect(dto.compensatedEnergyValue).toBe(fixture.compensatedEnergyValue);
     expect(dto.publicLightingContrib).toBe(fixture.publicLightingContrib);
-    expect(dto.electricEnergyConsumption).toBe(fixture.electricEnergyConsumption);
+    expect(dto.electricEnergyConsumption).toBe(
+      fixture.electricEnergyConsumption
+    );
     expect(dto.compensatedEnergy).toBe(fixture.compensatedEnergy);
     expect(dto.totalValueWithoutGD).toBe(fixture.totalValueWithoutGD);
     expect(dto.gdSavings).toBe(fixture.gdSavings);

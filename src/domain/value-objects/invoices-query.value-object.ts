@@ -28,7 +28,12 @@ export class InvoicesQuery {
   readonly cursor?: string;
   readonly limit: number;
 
-  private constructor(clientNumber?: string, referenceMonth?: Date, cursor?: string, limit: number = 10) {
+  private constructor(
+    clientNumber?: string,
+    referenceMonth?: Date,
+    cursor?: string,
+    limit: number = 10
+  ) {
     this.clientNumber = clientNumber;
     this.referenceMonth = referenceMonth;
     this.cursor = cursor;
@@ -43,7 +48,9 @@ export class InvoicesQuery {
     const { clientNumber, referenceMonth, cursor, limit } = result.data;
     return new InvoicesQuery(
       clientNumber,
-      referenceMonth ? ReferenceMonth.create(referenceMonth).getValue() : undefined,
+      referenceMonth
+        ? ReferenceMonth.create(referenceMonth).getValue()
+        : undefined,
       cursor,
       limit
     );

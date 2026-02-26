@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { MultipartFileParser } from "@/infrastructure/http/parsers";
-import { HttpError } from "@/infrastructure/http/errors";
 import type { MultipartFile } from "@fastify/multipart";
+import { describe, expect, it } from "vitest";
+import { HttpError } from "@/infrastructure/http/errors";
+import { MultipartFileParser } from "@/infrastructure/http/parsers";
 
 async function* makeAsyncIterator(chunks: Buffer[]) {
   for (const chunk of chunks) {
@@ -9,7 +9,9 @@ async function* makeAsyncIterator(chunks: Buffer[]) {
   }
 }
 
-function makeFileStream(options: { truncated?: boolean; chunks?: Buffer[] } = {}) {
+function makeFileStream(
+  options: { truncated?: boolean; chunks?: Buffer[] } = {}
+) {
   const chunks = options.chunks ?? [Buffer.from("pdf-data")];
   const stream = makeAsyncIterator(chunks);
 
@@ -18,7 +20,9 @@ function makeFileStream(options: { truncated?: boolean; chunks?: Buffer[] } = {}
   });
 }
 
-function makeMultipartFile(overrides: Partial<MultipartFile> = {}): MultipartFile {
+function makeMultipartFile(
+  overrides: Partial<MultipartFile> = {}
+): MultipartFile {
   return {
     fieldname: "file",
     filename: "invoice.pdf",
@@ -36,7 +40,9 @@ describe("MultipartFileParser", () => {
   const parser = new MultipartFileParser();
 
   it("throws HttpError 400 when file stream is undefined", async () => {
-    const file = makeMultipartFile({ file: undefined as unknown as MultipartFile["file"] });
+    const file = makeMultipartFile({
+      file: undefined as unknown as MultipartFile["file"]
+    });
 
     await expect(parser.parse(file)).rejects.toSatisfy(
       (err: unknown) =>
@@ -48,7 +54,9 @@ describe("MultipartFileParser", () => {
 
   it("throws HttpError 413 when file stream is truncated", async () => {
     const file = makeMultipartFile({
-      file: makeFileStream({ truncated: true }) as unknown as MultipartFile["file"]
+      file: makeFileStream({
+        truncated: true
+      }) as unknown as MultipartFile["file"]
     });
 
     await expect(parser.parse(file)).rejects.toSatisfy(
@@ -74,7 +82,9 @@ describe("MultipartFileParser", () => {
     const chunk1 = Buffer.from("chunk1");
     const chunk2 = Buffer.from("chunk2");
     const file = makeMultipartFile({
-      file: makeFileStream({ chunks: [chunk1, chunk2] }) as unknown as MultipartFile["file"]
+      file: makeFileStream({
+        chunks: [chunk1, chunk2]
+      }) as unknown as MultipartFile["file"]
     });
 
     const result = await parser.parse(file);

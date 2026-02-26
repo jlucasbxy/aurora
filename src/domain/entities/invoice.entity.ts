@@ -61,7 +61,11 @@ export class Invoice {
     return new Invoice(props);
   }
 
-  static reconstitute(id: string, createdAt: Date, props: InvoiceProps): Invoice {
+  static reconstitute(
+    id: string,
+    createdAt: Date,
+    props: InvoiceProps
+  ): Invoice {
     return new Invoice(props, id, createdAt);
   }
 }

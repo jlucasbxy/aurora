@@ -1,5 +1,5 @@
-import type { InvoiceExtractionDto } from "@/application/dtos";
 import Decimal from "decimal.js";
+import type { InvoiceExtractionDto } from "@/application/dtos";
 
 export type ProcessedInvoiceData = {
   clientNumber: string;

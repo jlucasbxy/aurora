@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { ClaudeLLMProvider } from "@/infrastructure/providers";
 import { env } from "@/infrastructure/config/env.config";
+import { ClaudeLLMProvider } from "@/infrastructure/providers";
 import { singleton } from "@/main/factories/singleton.util";
 
 export const makeClaudeLLMProvider = singleton(

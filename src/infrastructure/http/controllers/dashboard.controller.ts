@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { DashboardService } from "@/application/interfaces/services";
 import type { QueryDashboardDto } from "@/application/dtos/query-dashboard.dto";
+import type { DashboardService } from "@/application/interfaces/services";
 import type { Parser } from "@/infrastructure/http/parsers";
 
 type DashboardParams = { clientNumber: string };

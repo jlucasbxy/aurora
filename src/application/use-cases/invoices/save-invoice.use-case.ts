@@ -1,7 +1,6 @@
 import type { InvoiceDto } from "@/application/dtos";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import { InvoiceMapper } from "@/application/mappers";
-import type { ProcessedInvoiceData } from "./process-invoice-data.use-case";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
   ClientNumber,
@@ -9,6 +8,7 @@ import {
   Quantity,
   ReferenceMonth
 } from "@/domain/value-objects";
+import type { ProcessedInvoiceData } from "./process-invoice-data.use-case";
 
 export class SaveInvoiceUseCase {
   constructor(private readonly invoiceRepository: InvoiceRepository) {}

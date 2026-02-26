@@ -12,12 +12,14 @@ export function registerDashboardRoutes(
   app.get<DashboardParams>(
     `${ROUTE_PREFIXES.DASHBOARD}/:clientNumber/energy`,
     { config: { rateLimit: RATE_LIMITS.DASHBOARD } },
-    (req: FastifyRequest<DashboardParams>, reply) => controller.energy(req, reply)
+    (req: FastifyRequest<DashboardParams>, reply) =>
+      controller.energy(req, reply)
   );
 
   app.get<DashboardParams>(
     `${ROUTE_PREFIXES.DASHBOARD}/:clientNumber/financial`,
     { config: { rateLimit: RATE_LIMITS.DASHBOARD } },
-    (req: FastifyRequest<DashboardParams>, reply) => controller.financial(req, reply)
+    (req: FastifyRequest<DashboardParams>, reply) =>
+      controller.financial(req, reply)
   );
 }

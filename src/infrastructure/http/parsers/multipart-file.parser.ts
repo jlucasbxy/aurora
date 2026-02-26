@@ -1,6 +1,6 @@
-import { HttpError } from "@/infrastructure/http/errors";
 import type { MultipartFile } from "@fastify/multipart";
-import { Parser } from ".";
+import { HttpError } from "@/infrastructure/http/errors";
+import type { Parser } from ".";
 
 export class MultipartFileParser
   implements Parser<Promise<Buffer[]>, MultipartFile>
