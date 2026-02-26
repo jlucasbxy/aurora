@@ -1,6 +1,6 @@
-export { ClientNumber } from "@/domain/value-objects/client-number.value-object";
-export { DashboardQuery } from "@/domain/value-objects/dashboard-query.value-object";
-export { InvoicesQuery } from "@/domain/value-objects/invoices-query.value-object";
-export { Money } from "@/domain/value-objects/money.value-object";
-export { Quantity } from "@/domain/value-objects/quantity.value-object";
-export { ReferenceMonth } from "@/domain/value-objects/reference-month.value-object";
+export { ClientNumber } from "./client-number.value-object";
+export { DashboardQuery } from "./dashboard-query.value-object";
+export { InvoicesQuery } from "./invoices-query.value-object";
+export { Money } from "./money.value-object";
+export { Quantity } from "./quantity.value-object";
+export { ReferenceMonth } from "./reference-month.value-object";

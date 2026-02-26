@@ -1,1 +1,1 @@
-export { Invoice } from "@/domain/entities/invoice.entity";
+export { Invoice } from "./invoice.entity";

@@ -1,9 +1,9 @@
-export { ErrorCode } from "@/domain/enums";
-export type { UploadFileDto } from "@/application/dtos/upload-file.dto";
-export type { DashboardEnergyDto } from "@/application/dtos/dashboard-energy.dto";
-export type { DashboardFinancialDto } from "@/application/dtos/dashboard-financial.dto";
-export type { InvoiceDto } from "@/application/dtos/invoice.dto";
-export type { InvoiceExtractionDto } from "@/application/dtos/invoice-extraction.dto";
-export type { PaginatedResult } from "@/application/dtos/paginated-result";
-export type { QueryDashboardDto } from "@/application/dtos/query-dashboard.dto";
-export type { QueryInvoiceDto } from "@/application/dtos/query-invoice.dto";
+export { ErrorCode } from "../../domain/enums";
+export type { UploadFileDto } from "./upload-file.dto";
+export type { DashboardEnergyDto } from "./dashboard-energy.dto";
+export type { DashboardFinancialDto } from "./dashboard-financial.dto";
+export type { InvoiceDto } from "./invoice.dto";
+export type { InvoiceExtractionDto } from "./invoice-extraction.dto";
+export type { PaginatedResult } from "./paginated-result";
+export type { QueryDashboardDto } from "./query-dashboard.dto";
+export type { QueryInvoiceDto } from "./query-invoice.dto";

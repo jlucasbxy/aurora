@@ -1,1 +1,1 @@
-export { ErrorCode } from "@/domain/enums/error-code.enum";
+export { ErrorCode } from "./error-code.enum";

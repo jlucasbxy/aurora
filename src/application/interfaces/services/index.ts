@@ -1,2 +1,2 @@
-export type { DashboardService } from "@/application/interfaces/services/dashboard-service";
-export type { InvoiceService } from "@/application/interfaces/services/invoice-service";
+export type { DashboardService } from "./dashboard-service";
+export type { InvoiceService } from "./invoice-service";

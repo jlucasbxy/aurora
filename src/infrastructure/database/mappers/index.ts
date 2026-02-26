@@ -1,1 +1,1 @@
-export { PrismaInvoiceMapper } from "@/infrastructure/database/mappers/prisma-invoice.mapper";
+export { PrismaInvoiceMapper } from "./prisma-invoice.mapper";

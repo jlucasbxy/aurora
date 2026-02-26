@@ -1,6 +1,6 @@
 export interface Parser<T, K = unknown> {
   parse(...input: K[]): T;
 }
-export { MultipartFileParser } from "@/infrastructure/http/parsers/multipart-file.parser";
-export { InvoiceQueryParser } from "@/infrastructure/http/parsers/invoice-query.parser";
-export { DashboardQueryParser } from "@/infrastructure/http/parsers/dashboard-query.parser";
+export { MultipartFileParser } from "./multipart-file.parser";
+export { InvoiceQueryParser } from "./invoice-query.parser";
+export { DashboardQueryParser } from "./dashboard-query.parser";

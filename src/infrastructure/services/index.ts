@@ -1,2 +1,2 @@
-export { DashboardServiceImpl } from "@/infrastructure/services/dashboard.service";
-export { InvoiceServiceImpl } from "@/infrastructure/services/invoice.service";
+export { DashboardServiceImpl } from "./dashboard.service";
+export { InvoiceServiceImpl } from "./invoice.service";

@@ -1,1 +1,1 @@
-export type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
+export type { InvoiceRepository } from "./invoice-repository";

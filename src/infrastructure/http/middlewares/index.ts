@@ -1,1 +1,1 @@
-export { errorHandler } from "@/infrastructure/http/middlewares/error-handler.middleware";
+export { errorHandler } from "./error-handler.middleware";

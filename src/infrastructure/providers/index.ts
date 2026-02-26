@@ -1,1 +1,1 @@
-export { ClaudeLLMProvider } from "@/infrastructure/providers/claude-llm.provider";
+export { ClaudeLLMProvider } from "./claude-llm.provider";

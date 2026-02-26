@@ -1,1 +1,1 @@
-export { HttpError } from "@/infrastructure/http/errors/http.error";
+export { HttpError } from "./http.error";
