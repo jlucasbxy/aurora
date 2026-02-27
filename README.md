@@ -166,6 +166,12 @@ Variáveis necessárias:
 | `ANTHROPIC_API_KEY` | Sim | `sk-ant-...` | Chave de acesso ao Claude |
 | `ENABLE_SWAGGER` | Não (default: `false`) | `true` | Habilita Swagger fora de `production` |
 | `MAX_FILE_SIZE_KB` | Não (default: `50`) | `50` | Tamanho máximo de upload de arquivo em KB |
+| `RATE_LIMIT_INVOICE_LIST_MAX` | Não (default: `100`) | `100` | Máximo de requisições para `GET /invoices` |
+| `RATE_LIMIT_INVOICE_LIST_WINDOW` | Não (default: `15 minutes`) | `15 minutes` | Janela de tempo para `GET /invoices` |
+| `RATE_LIMIT_INVOICE_UPLOAD_MAX` | Não (default: `10`) | `10` | Máximo de requisições para `POST /invoices/upload` |
+| `RATE_LIMIT_INVOICE_UPLOAD_WINDOW` | Não (default: `15 minutes`) | `15 minutes` | Janela de tempo para `POST /invoices/upload` |
+| `RATE_LIMIT_DASHBOARD_MAX` | Não (default: `100`) | `100` | Máximo de requisições para `GET /dashboard/*` |
+| `RATE_LIMIT_DASHBOARD_WINDOW` | Não (default: `15 minutes`) | `15 minutes` | Janela de tempo para `GET /dashboard/*` |
 
 Exemplo (`.env`):
 
@@ -177,6 +183,12 @@ REDIS_URL="redis://:lumi_cache@localhost:6379"
 ANTHROPIC_API_KEY="your-api-key-here"
 ENABLE_SWAGGER=true
 MAX_FILE_SIZE_KB=50
+RATE_LIMIT_INVOICE_LIST_MAX=100
+RATE_LIMIT_INVOICE_LIST_WINDOW="15 minutes"
+RATE_LIMIT_INVOICE_UPLOAD_MAX=10
+RATE_LIMIT_INVOICE_UPLOAD_WINDOW="15 minutes"
+RATE_LIMIT_DASHBOARD_MAX=100
+RATE_LIMIT_DASHBOARD_WINDOW="15 minutes"
 ```
 
 > Segurança: nunca versione chaves reais. Se uma chave foi exposta, gere uma nova e revogue a anterior.
@@ -453,8 +465,9 @@ curl "http://localhost:3000/api/v1/dashboard/1234567890/financial?dateStart=JAN/
 
 - Rate limit por rota:
   - `GET /invoices`: **100 req / 15 min**
-  - `POST /invoices/upload`: **20 req / 15 min**
+  - `POST /invoices/upload`: **10 req / 15 min**
   - `GET /dashboard/*`: **100 req / 15 min**
+- Todos os limites de rate limit são configuráveis via variáveis de ambiente `RATE_LIMIT_*`.
 - Body limit global: **1 MB**
 - Upload por arquivo: **50 KB** (configurável via `MAX_FILE_SIZE_KB`)
 - Apenas `application/pdf` é aceito no upload
