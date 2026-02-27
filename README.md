@@ -101,9 +101,10 @@ O modelo é configurado em `src/infrastructure/providers/claude-llm.provider.ts`
 - **Custo:** Haiku é a opção mais econômica da família Claude 4.5. Para extração de campos estruturados de PDFs (tarefa objetiva e repetitiva), o custo por requisição é significativamente menor;
 - **Latência:** respostas mais rápidas, importante quando o upload do usuário bloqueia até a extração completar;
 - **Qualidade suficiente:** a tarefa é restrita (7 campos numéricos + 2 strings, todos explicitamente presentes no documento). Modelos maiores não trazem ganho perceptível para este nível de complexidade;
+- **Layout uniforme:** as faturas processadas seguem essencialmente o mesmo layout padronizado (CEMIG), com os campos sempre nas mesmas posições e formatação. Não há variação significativa entre documentos que justifique a capacidade de raciocínio adicional de um modelo maior;
 - **Structured Output:** Haiku 4.5 suporta o mesmo `zodOutputFormat` que os modelos maiores, garantindo saída JSON estrita.
 
-Em cenários com PDFs muito ambíguos ou layouts não padronizados, um modelo maior (Sonnet) poderia melhorar robustez, mas com custo 5-10x maior por requisição.
+Em cenários com PDFs de distribuidoras diferentes ou layouts não padronizados, um modelo maior (Sonnet) poderia melhorar robustez, mas com custo 5-10x maior por requisição — o que não se justifica para documentos uniformes como os deste caso.
 
 #### Engenharia de prompt
 
