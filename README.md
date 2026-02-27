@@ -158,6 +158,7 @@ Variáveis necessárias:
 
 | Variável | Obrigatória | Exemplo | Descrição |
 |---|---|---|---|
+| `NODE_ENV` | Não (default: `development`) | `development` | Ambiente de execução (`development`, `test`, `production`) |
 | `PORT` | Sim | `3000` | Porta HTTP da API |
 | `HOST` | Sim | `0.0.0.0` | Host de bind do Fastify |
 | `DATABASE_URL` | Sim | `postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public` | Conexão PostgreSQL |
@@ -167,6 +168,7 @@ Variáveis necessárias:
 Exemplo (`.env`):
 
 ```dotenv
+NODE_ENV=development
 PORT=3000
 HOST=0.0.0.0
 DATABASE_URL="postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public"

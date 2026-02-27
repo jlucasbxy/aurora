@@ -17,7 +17,7 @@ import {
 import { makeRedisClient } from "@/main/factories/redis";
 
 export async function start() {
-  const isDev = process.env.NODE_ENV !== "production";
+  const isDev = env.NODE_ENV !== "production";
   const app = Fastify({
     logger: isDev
       ? {
