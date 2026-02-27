@@ -1,6 +1,7 @@
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
 import { ErrorCode } from "@/application/dtos";
+import { env } from "@/infrastructure/config/env.config";
 import { DomainError } from "@/domain/errors";
 import { HttpError } from "@/infrastructure/http/errors";
 import { httpStatusFor, toResponse } from "@/infrastructure/http/presenters";
@@ -13,7 +14,7 @@ export function errorHandler(
   if ("statusCode" in error && error.statusCode === 413) {
     const body = toResponse(
       ErrorCode.FILE_TOO_LARGE,
-      "File or request body exceeds the 50 KB limit"
+      `File or request body exceeds the ${env.MAX_FILE_SIZE_KB} KB limit`
     );
     return reply.status(413).send(body);
   }

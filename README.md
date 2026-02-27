@@ -165,6 +165,7 @@ Variáveis necessárias:
 | `REDIS_URL` | Sim | `redis://:lumi_cache@localhost:6379` | Conexão Redis (cache + rate-limit) |
 | `ANTHROPIC_API_KEY` | Sim | `sk-ant-...` | Chave de acesso ao Claude |
 | `ENABLE_SWAGGER` | Não (default: `false`) | `true` | Habilita Swagger fora de `development` |
+| `MAX_FILE_SIZE_KB` | Não (default: `50`) | `50` | Tamanho máximo de upload de arquivo em KB |
 
 Exemplo (`.env`):
 
@@ -176,6 +177,7 @@ DATABASE_URL="postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public"
 REDIS_URL="redis://:lumi_cache@localhost:6379"
 ANTHROPIC_API_KEY="your-api-key-here"
 ENABLE_SWAGGER=true
+MAX_FILE_SIZE_KB=50
 ```
 
 > Segurança: nunca versione chaves reais. Se uma chave foi exposta, gere uma nova e revogue a anterior.
@@ -454,11 +456,14 @@ curl "http://localhost:3000/api/v1/dashboard/1234567890/financial?dateStart=JAN/
   - `GET /invoices`: **100 req / 15 min**
   - `POST /invoices/upload`: **20 req / 15 min**
   - `GET /dashboard/*`: **100 req / 15 min**
-- Body limit global: **50 KB**
-- Upload por arquivo: **50 KB**
+- Body limit global: **1 MB**
+- Upload por arquivo: **50 KB** (configurável via `MAX_FILE_SIZE_KB`)
 - Apenas `application/pdf` é aceito no upload
 - `helmet` habilitado
 - CORS configurado com `origin: false` (API fechada para browsers por padrão)
+
+**Sobre o limite de upload (50 KB):**
+O valor padrão de 50 KB foi definido com base em testes com faturas reais — nenhuma ultrapassou 40 KB, então 50 KB oferece uma margem de segurança confortável. Esse limite é configurável via `MAX_FILE_SIZE_KB` porque o tamanho dos PDFs pode variar conforme a distribuidora ou o layout da fatura. Manter um limite adequado é importante do ponto de vista de segurança: restringe ataques de negação de serviço (DoS) por envio de arquivos grandes que consomem memória, banda e processamento do servidor, e reduz a superfície de exploração de payloads maliciosos embutidos em PDFs superdimensionados.
 
 Exemplo de erro de rate limit:
 

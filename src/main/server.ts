@@ -27,7 +27,7 @@ export async function start() {
           }
         }
       : true,
-    bodyLimit: 50 * 1024 // 50 KB
+    bodyLimit: 1_048_576
   });
 
   app.setErrorHandler(errorHandler);
@@ -46,7 +46,7 @@ export async function start() {
 
   await app.register(fastifyMultipart, {
     limits: {
-      fileSize: 50 * 1024 // 50 KB per file
+      fileSize: env.MAX_FILE_SIZE_KB * 1024
     }
   });
 

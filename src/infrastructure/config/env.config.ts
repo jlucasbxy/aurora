@@ -8,7 +8,8 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   REDIS_URL: z.url(),
   ANTHROPIC_API_KEY: z.string(),
-  ENABLE_SWAGGER: z.coerce.boolean().default(false)
+  ENABLE_SWAGGER: z.coerce.boolean().default(false),
+  MAX_FILE_SIZE_KB: z.coerce.number().int().min(1).default(50)
 });
 
 const parsedEnv = envSchema.parse(process.env);
