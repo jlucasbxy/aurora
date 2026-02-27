@@ -53,6 +53,28 @@ describe("PrismaInvoiceRepository", () => {
     );
   });
 
+  it("throws InvoiceAlreadyExistsError when driver adapter reports unique constraint violation", async () => {
+    prisma.invoice.create.mockRejectedValue({
+      code: "P2002",
+      meta: {
+        modelName: "Invoice",
+        driverAdapterError: {
+          cause: {
+            constraint: {
+              fields: ['"clientNumber"', '"referenceMonth"']
+            }
+          }
+        }
+      }
+    });
+
+    const repository = new PrismaInvoiceRepository(prisma as never);
+
+    await expect(repository.save(buildInvoice())).rejects.toBeInstanceOf(
+      InvoiceAlreadyExistsError
+    );
+  });
+
   it("rethrows unknown persistence errors", async () => {
     const persistenceError = new Error("database unavailable");
     prisma.invoice.create.mockRejectedValue(persistenceError);
