@@ -18,6 +18,7 @@ API backend em Node.js para:
 - [Rate limit, segurança e limites](#rate-limit-segurança-e-limites)
 - [Fluxo de dados](#fluxo-de-dados)
 - [Testes e qualidade](#testes-e-qualidade)
+- [Demonstração em produção](#demonstração-em-produção)
 - [Limitações conhecidas](#limitações-conhecidas)
 
 ## Tecnologias e decisões arquiteturais
@@ -277,13 +278,6 @@ Base URL (local):
 ```text
 http://localhost:<PORT>/api/v1
 ```
-
-Base URL (produção):
-
-```text
-https://lumi-challenge-production.up.railway.app/api/v1
-```
-
 Documentação OpenAPI/Swagger:
 - UI interativa: `http://localhost:<PORT>/docs`
 - Especificação JSON: `http://localhost:<PORT>/docs/json`
@@ -554,3 +548,25 @@ Cobertura atual do projeto (unitária) inclui:
 - value objects e entidade de domínio;
 - use cases de invoices e dashboard;
 - controllers.
+
+## Demonstração em produção
+
+A API está hospedada no **[Railway](https://railway.com/)** e pode ser testada diretamente via `curl` ou qualquer cliente HTTP. Para testar, basta substituir `http://localhost:<PORT>` pela URL de produção nos exemplos acima.
+
+**Base URL:**
+
+```text
+https://lumi-challenge-production.up.railway.app/api/v1
+```
+
+### Infraestrutura no Railway
+
+| Serviço | Descrição |
+|---|---|
+| **App (Node.js)** | Aplicação Fastify compilada (`npm run build` + `npm run start`) |
+| **PostgreSQL** | Banco de dados gerenciado pelo Railway |
+| **Redis** | Cache e rate-limit gerenciado pelo Railway |
+
+As variáveis de ambiente (`DATABASE_URL`, `REDIS_URL`, `ANTHROPIC_API_KEY`, etc.) são configuradas diretamente no painel do Railway. O deploy é automático via integração com o repositório Git — cada push na branch `main` dispara um novo build e deploy.
+
+> **Nota:** Swagger/OpenAPI fica desabilitado em produção (`NODE_ENV=production`). O rate limit está ativo — em caso de erro `429`, aguarde o tempo indicado na resposta antes de retentar.
