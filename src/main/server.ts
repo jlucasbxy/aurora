@@ -8,6 +8,7 @@ import { registerSwagger } from "@/infrastructure/http/docs";
 import { errorHandler } from "@/infrastructure/http/middlewares";
 import {
   registerDashboardRoutes,
+  registerHealthRoute,
   registerInvoiceRoutes
 } from "@/infrastructure/http/routes";
 import {
@@ -56,6 +57,8 @@ export async function start() {
     version: "1.0.0",
     description: "API for energy invoice upload, listing, and dashboards."
   });
+
+  registerHealthRoute(app);
 
   await app.register(
     async (api) => {

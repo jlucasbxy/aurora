@@ -283,6 +283,24 @@ Documentação OpenAPI/Swagger:
 - Em `NODE_ENV=production`, fica sempre desabilitado (ignora `ENABLE_SWAGGER`).
 - Fora de `production`, depende de `ENABLE_SWAGGER=true`.
 
+### Healthcheck
+
+`GET /health` (fora do prefixo `/api/v1`)
+
+Endpoint leve para monitoramento, load balancers e probes de liveness (Docker/Kubernetes).
+
+```bash
+curl http://localhost:3000/health
+```
+
+Resposta `200`:
+
+```json
+{
+  "status": "ok"
+}
+```
+
 ### 1) Upload de fatura
 
 `POST /invoices/upload`
