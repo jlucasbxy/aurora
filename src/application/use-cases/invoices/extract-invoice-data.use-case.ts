@@ -16,7 +16,7 @@ IMPORTANT RULES:
 
 Required fields:
 - clientNumber: the customer number (string)
-- referenceMonth: reference month in format "MMM/YYYY" e.g. "JAN/2024" (string)
+- referenceMonth: reference month in format "MMM/YYYY" using Portuguese abbreviations (JAN, FEV, MAR, ABR, MAI, JUN, JUL, AGO, SET, OUT, NOV, DEZ) e.g. "SET/2024" (string)
 - electricEnergyQty: electric energy quantity in kWh (integer)
 - electricEnergyValue: electric energy value in BRL (number)
 - sceeEnergyQty: SCEE ICMS energy quantity in kWh (integer)
