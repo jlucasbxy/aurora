@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Quantity } from "@/domain/value-objects";
 import { InvalidQuantityError } from "@/domain/errors";
+import { Quantity } from "@/domain/value-objects";
 
 describe("Quantity", () => {
   it("creates with a valid integer", () => {

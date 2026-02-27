@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { DashboardQuery } from "@/domain/value-objects";
 import { InvalidDashboardQueryError } from "@/domain/errors";
+import { DashboardQuery } from "@/domain/value-objects";
 
 describe("DashboardQuery", () => {
   it("parses valid input and converts dates", () => {

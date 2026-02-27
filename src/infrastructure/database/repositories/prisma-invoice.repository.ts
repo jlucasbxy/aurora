@@ -4,8 +4,8 @@ import type {
   InvoiceFinancialReadModel
 } from "@/application/read-models";
 import type { Invoice } from "@/domain/entities/invoice.entity";
-import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { InvoiceAlreadyExistsError } from "@/domain/errors";
+import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { Money, Quantity } from "@/domain/value-objects";
 import { PrismaInvoiceMapper } from "@/infrastructure/database/mappers";
 import type { PrismaClient } from "@/infrastructure/database/prisma/generated/prisma/client";
@@ -41,7 +41,8 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
           compensatedEnergyQty: invoice.compensatedEnergyQty.getValue(),
           compensatedEnergyValue: invoice.compensatedEnergyValue.getValue(),
           publicLightingContrib: invoice.publicLightingContrib.getValue(),
-          electricEnergyConsumption: invoice.electricEnergyConsumption.getValue(),
+          electricEnergyConsumption:
+            invoice.electricEnergyConsumption.getValue(),
           compensatedEnergy: invoice.compensatedEnergy.getValue(),
           totalValueWithoutGD: invoice.totalValueWithoutGD.getValue(),
           gdSavings: invoice.gdSavings.getValue(),
@@ -91,7 +92,9 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
     }
 
     // Driver adapter: fields are nested under meta.driverAdapterError.cause.constraint.fields
-    const driverError = meta.driverAdapterError as Record<string, unknown> | undefined;
+    const driverError = meta.driverAdapterError as
+      | Record<string, unknown>
+      | undefined;
     const cause = driverError?.cause as Record<string, unknown> | undefined;
     const constraint = cause?.constraint as Record<string, unknown> | undefined;
     if (Array.isArray(constraint?.fields)) {

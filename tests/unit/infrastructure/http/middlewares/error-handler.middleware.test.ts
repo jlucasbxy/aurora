@@ -65,10 +65,7 @@ describe("errorHandler", () => {
   });
 
   it("maps DomainError RESOURCE_NOT_FOUND to 404", () => {
-    const error = new DomainError(
-      ErrorCode.RESOURCE_NOT_FOUND,
-      "Not found"
-    );
+    const error = new DomainError(ErrorCode.RESOURCE_NOT_FOUND, "Not found");
 
     errorHandler(error, request, reply as never);
 
@@ -127,6 +124,8 @@ describe("errorHandler", () => {
     expect(reply.send).toHaveBeenCalledWith(
       expect.objectContaining({ code: ErrorCode.INTERNAL_SERVER_ERROR })
     );
-    expect((request.log as unknown as { error: ReturnType<typeof vi.fn> }).error).toHaveBeenCalledWith(error);
+    expect(
+      (request.log as unknown as { error: ReturnType<typeof vi.fn> }).error
+    ).toHaveBeenCalledWith(error);
   });
 });

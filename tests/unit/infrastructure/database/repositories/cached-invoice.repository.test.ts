@@ -145,7 +145,10 @@ describe("CachedInvoiceRepository", () => {
 
     it("returns cached energy data on cache hit", async () => {
       mockRedis.get.mockResolvedValue(
-        JSON.stringify({ electricEnergyConsumption: 300, compensatedEnergy: 150 })
+        JSON.stringify({
+          electricEnergyConsumption: 300,
+          compensatedEnergy: 150
+        })
       );
 
       const result = await repo.aggregateEnergy(query);

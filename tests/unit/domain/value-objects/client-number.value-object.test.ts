@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ClientNumber } from "@/domain/value-objects";
 import { InvalidClientNumberError } from "@/domain/errors";
+import { ClientNumber } from "@/domain/value-objects";
 
 describe("ClientNumber", () => {
   it("creates with a valid 10-digit number", () => {

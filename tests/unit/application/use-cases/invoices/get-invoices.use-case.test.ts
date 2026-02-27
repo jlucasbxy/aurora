@@ -1,6 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { uuidv7 } from "uuidv7";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { InvoiceRepository } from "@/application/interfaces/repositories";
+import { InvoiceMapper } from "@/application/mappers";
 import { GetInvoicesUseCase } from "@/application/use-cases/invoices/get-invoices.use-case";
 import { Invoice } from "@/domain/entities";
 import {
@@ -9,7 +10,6 @@ import {
   Quantity,
   ReferenceMonth
 } from "@/domain/value-objects";
-import { InvoiceMapper } from "@/application/mappers";
 
 const buildInvoice = (id: string, createdAt: Date) =>
   Invoice.reconstitute(id, createdAt, {

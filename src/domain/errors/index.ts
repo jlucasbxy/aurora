@@ -1,9 +1,9 @@
 export { DomainError } from "./domain.error";
-export { InvoiceAlreadyExistsError } from "./invoice-already-exists.error";
 export { InvalidClientNumberError } from "./invalid-client-number.error";
 export { InvalidDashboardQueryError } from "./invalid-dashboard-query.error";
 export { InvalidInvoicesQueryError } from "./invalid-invoices-query.error";
 export { InvalidMoneyError } from "./invalid-money.error";
 export { InvalidQuantityError } from "./invalid-quantity.error";
 export { InvalidReferenceMonthError } from "./invalid-reference-month.error";
+export { InvoiceAlreadyExistsError } from "./invoice-already-exists.error";
 export { ResourceNotFoundError } from "./resource-not-found.error";

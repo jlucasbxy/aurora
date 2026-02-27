@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Money } from "@/domain/value-objects";
 import { InvalidMoneyError } from "@/domain/errors";
+import { Money } from "@/domain/value-objects";
 
 describe("Money", () => {
   it("creates with a valid number", () => {

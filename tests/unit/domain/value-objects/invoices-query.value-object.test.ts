@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { InvoicesQuery } from "@/domain/value-objects";
 import { InvalidInvoicesQueryError } from "@/domain/errors";
+import { InvoicesQuery } from "@/domain/value-objects";
 
 describe("InvoicesQuery", () => {
   it("parses valid input and converts referenceMonth", () => {

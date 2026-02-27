@@ -1,8 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { z } from "zod";
 import { LlmError } from "@/application/interfaces/providers";
 import { ClaudeLLMProvider } from "@/infrastructure/providers/claude-llm.provider";
-import { z } from "zod";
 
 const schema = z.object({ value: z.string() });
 
@@ -26,7 +26,11 @@ describe("ClaudeLLMProvider", () => {
     });
     const provider = new ClaudeLLMProvider(createMockClient(mockParse));
 
-    const result = await provider.sendStructuredRequest(document, prompt, schema);
+    const result = await provider.sendStructuredRequest(
+      document,
+      prompt,
+      schema
+    );
 
     expect(result).toEqual({ value: "test" });
     expect(mockParse).toHaveBeenCalledOnce();
@@ -57,7 +61,8 @@ describe("ClaudeLLMProvider", () => {
     await expect(
       provider.sendStructuredRequest(document, prompt, schema)
     ).rejects.toSatisfy(
-      (err: unknown) => err instanceof LlmError && err.code === "EXTRACTION_FAILED"
+      (err: unknown) =>
+        err instanceof LlmError && err.code === "EXTRACTION_FAILED"
     );
     expect(mockParse).toHaveBeenCalledTimes(2);
   });
@@ -72,7 +77,11 @@ describe("ClaudeLLMProvider", () => {
       .mockResolvedValueOnce({ parsed_output: { value: "recovered" } });
     const provider = new ClaudeLLMProvider(createMockClient(mockParse));
 
-    const result = await provider.sendStructuredRequest(document, prompt, schema);
+    const result = await provider.sendStructuredRequest(
+      document,
+      prompt,
+      schema
+    );
 
     expect(result).toEqual({ value: "recovered" });
     expect(mockParse).toHaveBeenCalledTimes(2);
@@ -86,7 +95,8 @@ describe("ClaudeLLMProvider", () => {
     await expect(
       provider.sendStructuredRequest(document, prompt, schema)
     ).rejects.toSatisfy(
-      (err: unknown) => err instanceof LlmError && err.code === "EXTRACTION_FAILED"
+      (err: unknown) =>
+        err instanceof LlmError && err.code === "EXTRACTION_FAILED"
     );
     expect(mockParse).toHaveBeenCalledOnce();
   });
@@ -98,7 +108,8 @@ describe("ClaudeLLMProvider", () => {
     await expect(
       provider.sendStructuredRequest(document, prompt, schema)
     ).rejects.toSatisfy(
-      (err: unknown) => err instanceof LlmError && err.code === "EXTRACTION_FAILED"
+      (err: unknown) =>
+        err instanceof LlmError && err.code === "EXTRACTION_FAILED"
     );
     expect(mockParse).toHaveBeenCalledTimes(2);
   });

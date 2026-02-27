@@ -1,8 +1,8 @@
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
 import { ErrorCode } from "@/application/dtos";
-import { env } from "@/infrastructure/config/env.config";
 import { DomainError } from "@/domain/errors";
+import { env } from "@/infrastructure/config/env.config";
 import { HttpError } from "@/infrastructure/http/errors";
 import { httpStatusFor, toResponse } from "@/infrastructure/http/presenters";
 

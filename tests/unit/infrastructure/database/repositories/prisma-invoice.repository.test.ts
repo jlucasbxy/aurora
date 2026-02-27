@@ -81,6 +81,8 @@ describe("PrismaInvoiceRepository", () => {
 
     const repository = new PrismaInvoiceRepository(prisma as never);
 
-    await expect(repository.save(buildInvoice())).rejects.toBe(persistenceError);
+    await expect(repository.save(buildInvoice())).rejects.toBe(
+      persistenceError
+    );
   });
 });

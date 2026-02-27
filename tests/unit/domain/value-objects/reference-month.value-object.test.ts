@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ReferenceMonth } from "@/domain/value-objects";
 import { InvalidReferenceMonthError } from "@/domain/errors";
+import { ReferenceMonth } from "@/domain/value-objects";
 
 describe("ReferenceMonth", () => {
   it("creates and displays a valid reference month", () => {
