@@ -141,7 +141,7 @@ Padrões principais:
 - **Factories/singletons** para composição e ciclo de vida de dependências.
 
 ## Pré-requisitos
-- Node.js **22+** (recomendado)
+- Node.js **24.x** (recomendado)
 - npm
 - Docker + Docker Compose (fluxo principal de setup)
 - Chave da API da Anthropic (obrigatória para upload com extração LLM)
