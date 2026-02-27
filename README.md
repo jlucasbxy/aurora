@@ -271,10 +271,16 @@ npm run start
 
 ## API
 
-Base URL:
+Base URL (local):
 
 ```text
 http://localhost:3000/api/v1
+```
+
+Base URL (produção):
+
+```text
+https://lumi-challenge-production.up.railway.app/api/v1
 ```
 
 Documentação OpenAPI/Swagger:
