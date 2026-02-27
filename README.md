@@ -264,6 +264,7 @@ npm run start
 | `npm run start` | Inicia versão compilada |
 | `npm run test` | Executa testes unitários com Vitest |
 | `npm run test:watch` | Testes em modo watch |
+| `npm run test:coverage` | Executa testes com relatório de cobertura (v8) |
 | `npm run typecheck` | Checagem de tipos sem emitir build |
 | `npm run lint` | Lint com Biome |
 | `npm run format` | Formata código com Biome |
