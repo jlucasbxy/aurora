@@ -15,6 +15,10 @@ describe("Money", () => {
     );
   });
 
+  it("throws InvalidMoneyError for values with more than 2 decimal places", () => {
+    expect(() => Money.create(123.456)).toThrow(InvalidMoneyError);
+  });
+
   it("adds values with precision", () => {
     const result = Money.create(0.1).plus(Money.create(0.2));
     expect(result.getValue()).toBe(0.3);

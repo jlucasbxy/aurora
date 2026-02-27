@@ -2,7 +2,12 @@ import { z } from "zod";
 import Decimal from "decimal.js";
 import { InvalidMoneyError } from "@/domain/errors";
 
-const schema = z.number();
+const schema = z
+  .number()
+  .refine(
+    (value) => new Decimal(value).decimalPlaces() <= 2,
+    "Money value must have at most 2 decimal places"
+  );
 
 export class Money {
   private readonly value: number;
@@ -28,10 +33,10 @@ export class Money {
   }
 
   plus(other: Money): Money {
-    return new Money(new Decimal(this.value).plus(other.value).toNumber());
+    return Money.create(new Decimal(this.value).plus(other.value).toNumber());
   }
 
   minus(other: Money): Money {
-    return new Money(new Decimal(this.value).minus(other.value).toNumber());
+    return Money.create(new Decimal(this.value).minus(other.value).toNumber());
   }
 }
