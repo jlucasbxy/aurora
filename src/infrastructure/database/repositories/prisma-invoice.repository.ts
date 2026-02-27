@@ -54,54 +54,21 @@ export class PrismaInvoiceRepository implements InvoiceRepository {
       });
     } catch (error: unknown) {
       if (this.isUniqueConstraintViolation(error)) {
-        const fields = this.extractConstraintFields(error);
-        const isClientAndMonthUniqueViolation =
-          fields.includes("clientNumber") && fields.includes("referenceMonth");
-
-        if (isClientAndMonthUniqueViolation) {
-          throw new InvoiceAlreadyExistsError();
-        }
+        throw new InvoiceAlreadyExistsError();
       }
-
       throw error;
     }
 
     return invoice;
   }
 
-  private isUniqueConstraintViolation(
-    error: unknown
-  ): error is { code: "P2002"; meta?: Record<string, unknown> } {
+  private isUniqueConstraintViolation(error: unknown): boolean {
     return (
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
       error.code === "P2002"
     );
-  }
-
-  private extractConstraintFields(error: {
-    meta?: Record<string, unknown>;
-  }): string[] {
-    const meta = error.meta;
-    if (!meta) return [];
-
-    // Standard Prisma engine: meta.target is an array of field names
-    if (Array.isArray(meta.target)) {
-      return meta.target.map((f: string) => f.replace(/^"|"$/g, ""));
-    }
-
-    // Driver adapter: fields are nested under meta.driverAdapterError.cause.constraint.fields
-    const driverError = meta.driverAdapterError as
-      | Record<string, unknown>
-      | undefined;
-    const cause = driverError?.cause as Record<string, unknown> | undefined;
-    const constraint = cause?.constraint as Record<string, unknown> | undefined;
-    if (Array.isArray(constraint?.fields)) {
-      return constraint.fields.map((f: string) => f.replace(/^"|"$/g, ""));
-    }
-
-    return [];
   }
 
   async aggregateEnergy(
