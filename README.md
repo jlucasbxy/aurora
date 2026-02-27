@@ -50,7 +50,7 @@ API backend em Node.js para:
 **Escolha:** uso de `decimal.js` em [process-invoice-data.use-case.ts](/home/jlucasbx/code/challenges/lumi-challenge/src/application/use-cases/invoices/process-invoice-data.use-case.ts).
 
 **Por quê:**
-- JavaScript `number` usa IEEE 754, podendo gerar imprecisão em operações como soma/subtração de decimais;
+- JavaScript `number` usa IEEE 754, podendo gerar imprecisão em operações aritméticas com decimais;
 - `decimal.js` evita erros acumulados antes da persistência;
 - os campos derivados (`totalValueWithoutGD`, `gdSavings`, consumo total) são calculados de forma determinística.
 
