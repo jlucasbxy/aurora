@@ -1,4 +1,5 @@
 export { DomainError } from "./domain.error";
+export { InvoiceAlreadyExistsError } from "./invoice-already-exists.error";
 export { InvalidClientNumberError } from "./invalid-client-number.error";
 export { InvalidDashboardQueryError } from "./invalid-dashboard-query.error";
 export { InvalidInvoicesQueryError } from "./invalid-invoices-query.error";

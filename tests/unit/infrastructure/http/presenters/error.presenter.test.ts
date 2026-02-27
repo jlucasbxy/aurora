@@ -6,6 +6,7 @@ describe("error.presenter", () => {
   it("maps ErrorCode to HTTP status", () => {
     expect(httpStatusFor(ErrorCode.VALIDATION_ERROR)).toBe(400);
     expect(httpStatusFor(ErrorCode.RATE_LIMIT_EXCEEDED)).toBe(429);
+    expect(httpStatusFor(ErrorCode.INVOICE_ALREADY_EXISTS)).toBe(409);
     expect(httpStatusFor(ErrorCode.RESOURCE_NOT_FOUND)).toBe(404);
   });
 

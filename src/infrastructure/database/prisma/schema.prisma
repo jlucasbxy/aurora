@@ -31,5 +31,5 @@ model Invoice {
   createdAt                 DateTime
 
   @@index([clientNumber])
-  @@index([clientNumber, referenceMonth])
+  @@unique([clientNumber, referenceMonth])
 }

@@ -5,6 +5,7 @@ const STATUS_MAP: Record<ErrorCode, number> = {
   [ErrorCode.RATE_LIMIT_EXCEEDED]: 429,
   [ErrorCode.INTERNAL_SERVER_ERROR]: 500,
   [ErrorCode.INVALID_FILE_TYPE]: 400,
+  [ErrorCode.INVOICE_ALREADY_EXISTS]: 409,
   [ErrorCode.INVALID_MONEY]: 400,
   [ErrorCode.INVALID_QUANTITY]: 400,
   [ErrorCode.INVALID_REFERENCE_MONTH]: 400,

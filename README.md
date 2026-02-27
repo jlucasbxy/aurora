@@ -319,6 +319,18 @@ Tipo inválido (não-PDF):
 }
 ```
 
+Fatura duplicada para o mesmo cliente e mês/ano (`409`):
+
+```json
+{
+  "code": "INVOICE_ALREADY_EXISTS",
+  "message": "Invoice already exists for this client and reference month"
+}
+```
+
+Regra de unicidade:
+- Não é permitido cadastrar duas faturas com o mesmo par `clientNumber` + `referenceMonth`.
+
 ### 2) Listagem de faturas (paginada)
 
 `GET /invoices`
