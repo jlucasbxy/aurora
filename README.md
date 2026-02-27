@@ -246,7 +246,7 @@ npm run dev
 ```
 
 Servidor sobe em:
-- `http://localhost:3000` (ou conforme `HOST`/`PORT`)
+- `http://localhost:<PORT>` (conforme variáveis `HOST`/`PORT`)
 
 ### Produção (build + start)
 
@@ -274,7 +274,7 @@ npm run start
 Base URL (local):
 
 ```text
-http://localhost:3000/api/v1
+http://localhost:<PORT>/api/v1
 ```
 
 Base URL (produção):
@@ -284,8 +284,8 @@ https://lumi-challenge-production.up.railway.app/api/v1
 ```
 
 Documentação OpenAPI/Swagger:
-- UI interativa: `http://localhost:3000/docs`
-- Especificação JSON: `http://localhost:3000/docs/json`
+- UI interativa: `http://localhost:<PORT>/docs`
+- Especificação JSON: `http://localhost:<PORT>/docs/json`
 - Em `NODE_ENV=production`, fica sempre desabilitado (ignora `ENABLE_SWAGGER`).
 - Fora de `production`, depende de `ENABLE_SWAGGER=true`.
 
@@ -296,7 +296,7 @@ Documentação OpenAPI/Swagger:
 Endpoint leve para monitoramento, load balancers e probes de liveness (Docker/Kubernetes).
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:<PORT>/health
 ```
 
 Resposta `200`:
@@ -314,7 +314,7 @@ Resposta `200`:
 #### Exemplo de requisição
 
 ```bash
-curl -X POST "http://localhost:3000/api/v1/invoices/upload" \
+curl -X POST "http://localhost:<PORT>/api/v1/invoices/upload" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@./invoice.pdf;type=application/pdf"
 ```
@@ -395,7 +395,7 @@ Query params opcionais:
 #### Exemplo de requisição
 
 ```bash
-curl "http://localhost:3000/api/v1/invoices?clientNumber=1234567890&referenceMonth=JAN/2024&limit=10"
+curl "http://localhost:<PORT>/api/v1/invoices?clientNumber=1234567890&referenceMonth=JAN/2024&limit=10"
 ```
 
 #### Exemplo de resposta `200`
@@ -446,7 +446,7 @@ Query params opcionais:
 #### Exemplo de requisição
 
 ```bash
-curl "http://localhost:3000/api/v1/dashboard/1234567890/energy?dateStart=JAN/2024&dateEnd=DEZ/2024"
+curl "http://localhost:<PORT>/api/v1/dashboard/1234567890/energy?dateStart=JAN/2024&dateEnd=DEZ/2024"
 ```
 
 #### Exemplo de resposta `200`
@@ -478,7 +478,7 @@ Query params opcionais:
 #### Exemplo de requisição
 
 ```bash
-curl "http://localhost:3000/api/v1/dashboard/1234567890/financial?dateStart=JAN/2024&dateEnd=DEZ/2024"
+curl "http://localhost:<PORT>/api/v1/dashboard/1234567890/financial?dateStart=JAN/2024&dateEnd=DEZ/2024"
 ```
 
 #### Exemplo de resposta `200`
