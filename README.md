@@ -158,7 +158,7 @@ Variáveis necessárias:
 
 | Variável | Obrigatória | Exemplo | Descrição |
 |---|---|---|---|
-| `NODE_ENV` | Não (default: `development`) | `development` | Ambiente de execução (`development`, `test`, `production`) |
+| `NODE_ENV` | Não (default: `production`) | `development` | Ambiente de execução (`development`, `test`, `production`) |
 | `PORT` | Sim | `3000` | Porta HTTP da API |
 | `HOST` | Sim | `0.0.0.0` | Host de bind do Fastify |
 | `DATABASE_URL` | Sim | `postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public` | Conexão PostgreSQL |
@@ -170,7 +170,6 @@ Variáveis necessárias:
 Exemplo (`.env`):
 
 ```dotenv
-NODE_ENV=development
 PORT=3000
 HOST=0.0.0.0
 DATABASE_URL="postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public"
@@ -255,8 +254,8 @@ http://localhost:3000/api/v1
 Documentação OpenAPI/Swagger:
 - UI interativa: `http://localhost:3000/docs`
 - Especificação JSON: `http://localhost:3000/docs/json`
-- Em `NODE_ENV=development`, fica sempre desabilitado (ignora `ENABLE_SWAGGER`).
-- Fora de `development`, depende de `ENABLE_SWAGGER=true`.
+- Em `NODE_ENV=production`, fica sempre desabilitado (ignora `ENABLE_SWAGGER`).
+- Fora de `production`, depende de `ENABLE_SWAGGER=true`.
 
 ### 1) Upload de fatura
 
