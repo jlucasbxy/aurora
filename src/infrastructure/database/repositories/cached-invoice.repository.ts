@@ -88,6 +88,37 @@ async function invalidateGlobalCache(redis: Redis): Promise<void> {
   await invalidateCacheByPattern(redis, `invoices:all:*`);
 }
 
+async function cacheThrough<TCache, TResult>(
+  redis: Redis,
+  key: string,
+  schema: z.ZodType<TCache>,
+  fromCache: (data: TCache) => TResult,
+  toCache: (result: NonNullable<TResult>) => TCache,
+  fetch: () => Promise<TResult>
+): Promise<TResult> {
+  const cached = await redis.get(key);
+  if (cached) {
+    try {
+      const parsed = schema.safeParse(JSON.parse(cached));
+      if (parsed.success) {
+        return fromCache(parsed.data);
+      }
+    } catch {
+      // malformed JSON, fall through to fetch
+    }
+  }
+
+  const result = await fetch();
+  if (result != null) {
+    await redis.setex(
+      key,
+      CACHE_TTL_SECONDS,
+      JSON.stringify(toCache(result as NonNullable<TResult>))
+    );
+  }
+  return result;
+}
+
 export class CachedInvoiceRepository implements InvoiceRepository {
   constructor(
     private readonly inner: InvoiceRepository,
@@ -95,27 +126,14 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   ) {}
 
   async findAll(query: InvoicesQuery): Promise<Invoice[]> {
-    const key = buildListCacheKey(query);
-
-    const cached = await this.redis.get(key);
-    if (cached) {
-      try {
-        const parsed = invoiceDtoArraySchema.safeParse(JSON.parse(cached));
-        if (parsed.success) {
-          return parsed.data.map(InvoiceMapper.fromDto);
-        }
-      } catch {
-        // malformed JSON, fall through to inner repo
-      }
-    }
-
-    const invoices = await this.inner.findAll(query);
-    await this.redis.setex(
-      key,
-      CACHE_TTL_SECONDS,
-      JSON.stringify(invoices.map(InvoiceMapper.toDto))
+    return cacheThrough(
+      this.redis,
+      buildListCacheKey(query),
+      invoiceDtoArraySchema,
+      (dtos) => dtos.map(InvoiceMapper.fromDto),
+      (invoices) => invoices.map(InvoiceMapper.toDto),
+      () => this.inner.findAll(query)
     );
-    return invoices;
   }
 
   async save(invoice: Invoice): Promise<Invoice> {
@@ -130,75 +148,40 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   async aggregateEnergy(
     query: DashboardQuery
   ): Promise<InvoiceEnergyReadModel | null> {
-    const key = buildDashboardCacheKey("energy", query);
-
-    const cached = await this.redis.get(key);
-    if (cached) {
-      try {
-        const parsed = energyCacheSchema.safeParse(JSON.parse(cached));
-        if (parsed.success) {
-          return {
-            electricEnergyConsumption: Quantity.reconstitute(
-              parsed.data.electricEnergyConsumption
-            ),
-            compensatedEnergy: Quantity.reconstitute(
-              parsed.data.compensatedEnergy
-            )
-          };
-        }
-      } catch {
-        // malformed JSON, fall through to inner repo
-      }
-    }
-
-    const result = await this.inner.aggregateEnergy(query);
-    if (result) {
-      await this.redis.setex(
-        key,
-        CACHE_TTL_SECONDS,
-        JSON.stringify({
-          electricEnergyConsumption:
-            result.electricEnergyConsumption.getValue(),
-          compensatedEnergy: result.compensatedEnergy.getValue()
-        })
-      );
-    }
-    return result;
+    return cacheThrough(
+      this.redis,
+      buildDashboardCacheKey("energy", query),
+      energyCacheSchema,
+      (data) => ({
+        electricEnergyConsumption: Quantity.reconstitute(
+          data.electricEnergyConsumption
+        ),
+        compensatedEnergy: Quantity.reconstitute(data.compensatedEnergy)
+      }),
+      (result) => ({
+        electricEnergyConsumption: result.electricEnergyConsumption.getValue(),
+        compensatedEnergy: result.compensatedEnergy.getValue()
+      }),
+      () => this.inner.aggregateEnergy(query)
+    );
   }
 
   async aggregateFinancial(
     query: DashboardQuery
   ): Promise<InvoiceFinancialReadModel | null> {
-    const key = buildDashboardCacheKey("financial", query);
-
-    const cached = await this.redis.get(key);
-    if (cached) {
-      try {
-        const parsed = financialCacheSchema.safeParse(JSON.parse(cached));
-        if (parsed.success) {
-          return {
-            totalValueWithoutGD: Money.reconstitute(
-              parsed.data.totalValueWithoutGD
-            ),
-            gdSavings: Money.reconstitute(parsed.data.gdSavings)
-          };
-        }
-      } catch {
-        // malformed JSON, fall through to inner repo
-      }
-    }
-
-    const result = await this.inner.aggregateFinancial(query);
-    if (result) {
-      await this.redis.setex(
-        key,
-        CACHE_TTL_SECONDS,
-        JSON.stringify({
-          totalValueWithoutGD: result.totalValueWithoutGD.getValue(),
-          gdSavings: result.gdSavings.getValue()
-        })
-      );
-    }
-    return result;
+    return cacheThrough(
+      this.redis,
+      buildDashboardCacheKey("financial", query),
+      financialCacheSchema,
+      (data) => ({
+        totalValueWithoutGD: Money.reconstitute(data.totalValueWithoutGD),
+        gdSavings: Money.reconstitute(data.gdSavings)
+      }),
+      (result) => ({
+        totalValueWithoutGD: result.totalValueWithoutGD.getValue(),
+        gdSavings: result.gdSavings.getValue()
+      }),
+      () => this.inner.aggregateFinancial(query)
+    );
   }
 }
