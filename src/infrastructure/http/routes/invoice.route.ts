@@ -62,6 +62,10 @@ export function registerInvoiceRoutes(
     `${ROUTE_PREFIXES.INVOICES}/upload`,
     {
       config: { rateLimit: RATE_LIMITS.INVOICE_UPLOAD },
+      validatorCompiler: ({ httpPart }) => {
+        if (httpPart === "body") return () => true;
+        return undefined as never;
+      },
       schema: {
         tags: ["Invoices"],
         summary: "Upload an energy invoice PDF",
