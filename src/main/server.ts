@@ -4,6 +4,7 @@ import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import { env } from "@/infrastructure/config/env.config";
+import { registerSwagger } from "@/infrastructure/http/docs";
 import { errorHandler } from "@/infrastructure/http/middlewares";
 import {
   registerDashboardRoutes,
@@ -47,6 +48,13 @@ export async function start() {
     limits: {
       fileSize: 50 * 1024 // 50 KB per file
     }
+  });
+
+  await registerSwagger(app, {
+    enabled: env.ENABLE_SWAGGER,
+    title: "Lumi Challenge API",
+    version: "1.0.0",
+    description: "API for energy invoice upload, listing, and dashboards."
   });
 
   await app.register(

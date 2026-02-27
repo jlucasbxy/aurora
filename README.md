@@ -246,6 +246,12 @@ Base URL:
 http://localhost:3000/api/v1
 ```
 
+Documentação OpenAPI/Swagger:
+- UI interativa: `http://localhost:3000/docs`
+- Especificação JSON: `http://localhost:3000/docs/json`
+- Comportamento padrão: habilitado fora de produção e desabilitado em produção.
+- Override: use `ENABLE_SWAGGER=true` para habilitar explicitamente.
+
 ### 1) Upload de fatura
 
 `POST /invoices/upload`

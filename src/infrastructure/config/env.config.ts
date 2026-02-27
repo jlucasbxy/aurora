@@ -6,7 +6,8 @@ const envSchema = z.object({
   HOST: z.ipv4().default("0.0.0.0"),
   DATABASE_URL: z.url(),
   REDIS_URL: z.url(),
-  ANTHROPIC_API_KEY: z.string()
+  ANTHROPIC_API_KEY: z.string(),
+  ENABLE_SWAGGER: z.coerce.boolean()
 });
 
 export const env = envSchema.parse(process.env);
