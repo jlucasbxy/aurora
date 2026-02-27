@@ -38,6 +38,46 @@ API backend em Node.js para:
 - migrations versionadas para previsibilidade de ambiente;
 - agregações (`sum`) usadas nos endpoints de dashboard.
 
+### Precisão monetária: `DECIMAL(15,2)`
+**Escolha:** campos financeiros persistidos como `Decimal @db.Decimal(15, 2)` no PostgreSQL.
+
+**Por quê:**
+- valores monetários não devem usar ponto flutuante binário (`float/double`) por risco de erro de arredondamento;
+- `DECIMAL(15,2)` garante precisão decimal adequada para moeda (2 casas) com faixa confortável para valores agregados;
+- o banco mantém consistência de cálculo financeiro em somas/agrupamentos.
+
+### Cálculo no backend: `decimal.js`
+**Escolha:** uso de `decimal.js` em [process-invoice-data.use-case.ts](/home/jlucasbx/code/challenges/lumi-challenge/src/application/use-cases/invoices/process-invoice-data.use-case.ts).
+
+**Por quê:**
+- JavaScript `number` usa IEEE 754, podendo gerar imprecisão em operações como soma/subtração de decimais;
+- `decimal.js` evita erros acumulados antes da persistência;
+- os campos derivados (`totalValueWithoutGD`, `gdSavings`, consumo total) são calculados de forma determinística.
+
+### Estratégia de índices (PostgreSQL)
+**Contexto:** consultas principais filtram por `clientNumber`, por `clientNumber + referenceMonth` e, potencialmente, por `referenceMonth` isolado.
+
+**Decisão técnica:**
+- índice composto `@@index([clientNumber, referenceMonth])` é o principal para consultas por cliente e por cliente+mês;
+- pela regra de **leftmost-prefix**, esse índice também atende consultas por `clientNumber` sozinho;
+- para consultas por `referenceMonth` sozinho, é necessário índice dedicado `@@index([referenceMonth])`.
+
+Tabela de cobertura:
+
+```text
+┌───────────────────────────────┬──────────────────────────────────────────────────┐
+│            Filter             │                    Index used                    │
+├───────────────────────────────┼──────────────────────────────────────────────────┤
+│ clientNumber only             │ (clientNumber, referenceMonth) — leftmost prefix │
+├───────────────────────────────┼──────────────────────────────────────────────────┤
+│ clientNumber + referenceMonth │ (clientNumber, referenceMonth) — full match      │
+├───────────────────────────────┼──────────────────────────────────────────────────┤
+│ referenceMonth only           │ (referenceMonth)                                  │
+└───────────────────────────────┴──────────────────────────────────────────────────┘
+```
+
+Observação: quando a estratégia inclui `@@index([referenceMonth])`, o índice simples `@@index([clientNumber])` tende a ficar redundante, já que o composto cobre esse filtro com coluna líder em `clientNumber`.
+
 ### Cache: Redis (Repository Decorator)
 **Escolha:** `ioredis` com `CachedInvoiceRepository` encapsulando o repositório Prisma.
 
