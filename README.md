@@ -164,7 +164,7 @@ Variáveis necessárias:
 | `DATABASE_URL` | Sim | `postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public` | Conexão PostgreSQL |
 | `REDIS_URL` | Sim | `redis://:lumi_cache@localhost:6379` | Conexão Redis (cache + rate-limit) |
 | `ANTHROPIC_API_KEY` | Sim | `sk-ant-...` | Chave de acesso ao Claude |
-| `ENABLE_SWAGGER` | Não (default: `false`) | `true` | Habilita Swagger fora de `development` |
+| `ENABLE_SWAGGER` | Não (default: `false`) | `true` | Habilita Swagger fora de `production` |
 | `MAX_FILE_SIZE_KB` | Não (default: `50`) | `50` | Tamanho máximo de upload de arquivo em KB |
 
 Exemplo (`.env`):
