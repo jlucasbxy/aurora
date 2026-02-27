@@ -82,6 +82,19 @@ Tabela de cobertura:
 - invalidação centralizada ao salvar nova fatura;
 - sem acoplar cache à camada de aplicação/domínio.
 
+### Paginação: Cursor-based (Keyset)
+**Escolha:** paginação baseada em cursor utilizando o `id` (UUIDv7) como marcador.
+
+**Por quê:**
+- **Performance:** diferente do `OFFSET`, que exige que o banco de dados escaneie e descarte registros anteriores (complexidade O(n)), a paginação por cursor utiliza índices para saltar diretamente para o ponto de continuação (complexidade O(1) ou O(log n)), mantendo a performance constante mesmo em tabelas com milhões de registros;
+- **Consistência:** evita o problema de pular ou repetir itens quando novas faturas são inseridas durante a navegação entre páginas, algo comum em sistemas de log/faturas;
+- **UUIDv7 como cursor:** como o projeto utiliza UUIDv7, os IDs são naturalmente ordenáveis por tempo. Isso permite que o `id` funcione como um cursor estável e eficiente sem a necessidade de colunas adicionais de timestamp para ordenação.
+
+**Funcionamento:**
+- A API retorna um `nextCursor` (o ID do último item da página atual);
+- O cliente envia esse cursor no parâmetro `?cursor=...` na próxima requisição;
+- O repositório busca os próximos itens ordenados de forma decrescente (`id < cursor`).
+
 ### LLM: Claude via Anthropic SDK
 **Escolha:** `@anthropic-ai/sdk` com `messages.parse` e schema Zod de saída.
 
