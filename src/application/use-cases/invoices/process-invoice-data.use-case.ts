@@ -1,24 +1,15 @@
 import Decimal from "decimal.js";
 import type { InvoiceExtractionDto } from "@/application/dtos";
-
-export type ProcessedInvoiceData = {
-  clientNumber: string;
-  referenceMonth: string;
-  electricEnergyQty: number;
-  electricEnergyValue: number;
-  sceeEnergyQty: number;
-  sceeEnergyValue: number;
-  compensatedEnergyQty: number;
-  compensatedEnergyValue: number;
-  publicLightingContrib: number;
-  electricEnergyConsumption: number;
-  compensatedEnergy: number;
-  totalValueWithoutGD: number;
-  gdSavings: number;
-};
+import { Invoice } from "@/domain/entities/invoice.entity";
+import {
+  ClientNumber,
+  Money,
+  Quantity,
+  ReferenceMonth
+} from "@/domain/value-objects";
 
 export class ProcessInvoiceDataUseCase {
-  execute(result: InvoiceExtractionDto): ProcessedInvoiceData {
+  execute(result: InvoiceExtractionDto): Invoice {
     const electricEnergyQty = new Decimal(result.electricEnergyQty);
     const sceeEnergyQty = new Decimal(result.sceeEnergyQty);
     const compensatedEnergyQty = new Decimal(result.compensatedEnergyQty);
@@ -27,26 +18,27 @@ export class ProcessInvoiceDataUseCase {
     const publicLightingContrib = new Decimal(result.publicLightingContrib);
     const compensatedEnergyValue = new Decimal(result.compensatedEnergyValue);
 
-    return {
-      clientNumber: result.clientNumber,
-      referenceMonth: result.referenceMonth,
-      electricEnergyQty: electricEnergyQty.toDecimalPlaces(0).toNumber(),
-      electricEnergyValue: electricEnergyValue.toNumber(),
-      sceeEnergyQty: sceeEnergyQty.toDecimalPlaces(0).toNumber(),
-      sceeEnergyValue: sceeEnergyValue.toNumber(),
-      compensatedEnergyQty: compensatedEnergyQty.toDecimalPlaces(0).toNumber(),
-      compensatedEnergyValue: compensatedEnergyValue.toNumber(),
-      publicLightingContrib: publicLightingContrib.toNumber(),
-      electricEnergyConsumption: electricEnergyQty
-        .plus(sceeEnergyQty)
-        .toDecimalPlaces(0)
-        .toNumber(),
-      compensatedEnergy: compensatedEnergyQty.toDecimalPlaces(0).toNumber(),
-      totalValueWithoutGD: electricEnergyValue
-        .plus(sceeEnergyValue)
-        .plus(publicLightingContrib)
-        .toNumber(),
-      gdSavings: compensatedEnergyValue.toNumber()
-    };
+    return Invoice.create({
+      clientNumber: ClientNumber.create(result.clientNumber),
+      referenceMonth: ReferenceMonth.create(result.referenceMonth),
+      electricEnergyQty: Quantity.create(electricEnergyQty.toNumber()),
+      electricEnergyValue: Money.create(electricEnergyValue.toNumber()),
+      sceeEnergyQty: Quantity.create(sceeEnergyQty.toNumber()),
+      sceeEnergyValue: Money.create(sceeEnergyValue.toNumber()),
+      compensatedEnergyQty: Quantity.create(compensatedEnergyQty.toNumber()),
+      compensatedEnergyValue: Money.create(compensatedEnergyValue.toNumber()),
+      publicLightingContrib: Money.create(publicLightingContrib.toNumber()),
+      electricEnergyConsumption: Quantity.create(
+        electricEnergyQty.plus(sceeEnergyQty).toNumber()
+      ),
+      compensatedEnergy: Quantity.create(compensatedEnergyQty.toNumber()),
+      totalValueWithoutGD: Money.create(
+        electricEnergyValue
+          .plus(sceeEnergyValue)
+          .plus(publicLightingContrib)
+          .toNumber()
+      ),
+      gdSavings: Money.create(compensatedEnergyValue.toNumber())
+    });
   }
 }

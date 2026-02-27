@@ -25,30 +25,16 @@ describe("ProcessInvoiceDataUseCase", () => {
       const result = useCase.execute(
         makeBaseInput({ electricEnergyQty: 100, sceeEnergyQty: 200 })
       );
-      expect(result.electricEnergyConsumption).toBe(300);
-    });
-
-    it("rounds floating-point sum", () => {
-      const result = useCase.execute(
-        makeBaseInput({ electricEnergyQty: 100.4, sceeEnergyQty: 200.7 })
-      );
-      expect(result.electricEnergyConsumption).toBe(Math.round(100.4 + 200.7));
+      expect(result.electricEnergyConsumption.getValue()).toBe(300);
     });
   });
 
   describe("compensatedEnergy", () => {
-    it("equals Math.round of compensatedEnergyQty", () => {
+    it("matches compensatedEnergyQty", () => {
       const result = useCase.execute(
         makeBaseInput({ compensatedEnergyQty: 150 })
       );
-      expect(result.compensatedEnergy).toBe(150);
-    });
-
-    it("rounds floating-point compensatedEnergyQty", () => {
-      const result = useCase.execute(
-        makeBaseInput({ compensatedEnergyQty: 149.6 })
-      );
-      expect(result.compensatedEnergy).toBe(150);
+      expect(result.compensatedEnergy.getValue()).toBe(150);
     });
   });
 
@@ -61,7 +47,7 @@ describe("ProcessInvoiceDataUseCase", () => {
           publicLightingContrib: 10.0
         })
       );
-      expect(result.totalValueWithoutGD).toBe(85.0);
+      expect(result.totalValueWithoutGD.getValue()).toBe(85.0);
     });
   });
 
@@ -70,14 +56,14 @@ describe("ProcessInvoiceDataUseCase", () => {
       const result = useCase.execute(
         makeBaseInput({ compensatedEnergyValue: -20.0 })
       );
-      expect(result.gdSavings).toBe(-20.0);
+      expect(result.gdSavings.getValue()).toBe(-20.0);
     });
 
     it("handles positive compensatedEnergyValue", () => {
       const result = useCase.execute(
         makeBaseInput({ compensatedEnergyValue: 30.5 })
       );
-      expect(result.gdSavings).toBe(30.5);
+      expect(result.gdSavings.getValue()).toBe(30.5);
     });
   });
 
@@ -90,7 +76,7 @@ describe("ProcessInvoiceDataUseCase", () => {
           publicLightingContrib: 0.3
         })
       );
-      expect(result.totalValueWithoutGD).toBe(0.6);
+      expect(result.totalValueWithoutGD.getValue()).toBe(0.6);
       // Native JS: 0.1 + 0.2 + 0.3 === 0.6000000000000001
       expect(0.1 + 0.2 + 0.3).not.toBe(0.6);
     });
@@ -104,73 +90,54 @@ describe("ProcessInvoiceDataUseCase", () => {
           publicLightingContrib: 3.3
         })
       );
-      expect(result.totalValueWithoutGD).toBe(6.6);
+      expect(result.totalValueWithoutGD.getValue()).toBe(6.6);
     });
 
     it("totalValueWithoutGD: 1.1 + 2.2 accumulates float error in native JS", () => {
       // Demonstrates why Decimal.js is needed for multi-step sums
       expect(1.1 + 2.2).not.toBe(3.3);
     });
-
-    it("electricEnergyConsumption: 0.1 + 0.2 rounds to 0", () => {
-      // 0.1 + 0.2 = 0.30000000000000004 in native JS; Decimal gives exact 0.3, both round to 0
-      const result = useCase.execute(
-        makeBaseInput({
-          electricEnergyQty: 0.1,
-          sceeEnergyQty: 0.2
-        })
-      );
-      expect(result.electricEnergyConsumption).toBe(0);
-    });
-
-    it("electricEnergyConsumption: 100.3 + 200.2 rounds to 301 (exact 300.5 rounds up)", () => {
-      const result = useCase.execute(
-        makeBaseInput({
-          electricEnergyQty: 100.3,
-          sceeEnergyQty: 200.2
-        })
-      );
-      expect(result.electricEnergyConsumption).toBe(301);
-    });
-
-    it("electricEnergyConsumption: 0.3 + 149.2 rounds to 150 (exact 149.5 rounds up)", () => {
-      const result = useCase.execute(
-        makeBaseInput({
-          electricEnergyQty: 0.3,
-          sceeEnergyQty: 149.2
-        })
-      );
-      expect(result.electricEnergyConsumption).toBe(150);
-    });
   });
 
-  describe("raw fields passed through unchanged", () => {
+  describe("raw fields mapped into value objects", () => {
     it("preserves clientNumber", () => {
       const result = useCase.execute(
         makeBaseInput({ clientNumber: "1234567890" })
       );
-      expect(result.clientNumber).toBe("1234567890");
+      expect(result.clientNumber.getValue()).toBe("1234567890");
     });
 
     it("preserves referenceMonth", () => {
       const result = useCase.execute(
         makeBaseInput({ referenceMonth: "MAR/2024" })
       );
-      expect(result.referenceMonth).toBe("MAR/2024");
+      expect(result.referenceMonth.toDisplay()).toBe("MAR/2024");
     });
 
     it("preserves electricEnergyValue", () => {
       const result = useCase.execute(
         makeBaseInput({ electricEnergyValue: 99.99 })
       );
-      expect(result.electricEnergyValue).toBe(99.99);
+      expect(result.electricEnergyValue.getValue()).toBe(99.99);
     });
 
     it("preserves publicLightingContrib", () => {
       const result = useCase.execute(
         makeBaseInput({ publicLightingContrib: 7.5 })
       );
-      expect(result.publicLightingContrib).toBe(7.5);
+      expect(result.publicLightingContrib.getValue()).toBe(7.5);
+    });
+  });
+
+  describe("quantity invariants", () => {
+    it("throws for non-integer quantity values", () => {
+      expect(() =>
+        useCase.execute(
+          makeBaseInput({
+            electricEnergyQty: 100.4
+          })
+        )
+      ).toThrow();
     });
   });
 });

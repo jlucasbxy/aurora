@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
-import type { ProcessedInvoiceData } from "@/application/use-cases/invoices/process-invoice-data.use-case";
 import { SaveInvoiceUseCase } from "@/application/use-cases/invoices/save-invoice.use-case";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
@@ -10,7 +9,7 @@ import {
   ReferenceMonth
 } from "@/domain/value-objects";
 
-const fixture: ProcessedInvoiceData = {
+const fixture = {
   clientNumber: "7202788900",
   referenceMonth: "JAN/2024",
   electricEnergyQty: 100,
@@ -24,7 +23,7 @@ const fixture: ProcessedInvoiceData = {
   compensatedEnergy: 150,
   totalValueWithoutGD: 85.0,
   gdSavings: -20.0
-};
+} as const;
 
 const buildInvoice = () =>
   Invoice.create({
@@ -58,41 +57,38 @@ describe("SaveInvoiceUseCase", () => {
   });
 
   it("calls repository.save() once and returns an InvoiceDto", async () => {
+    const invoice = buildInvoice();
     const savedInvoice = buildInvoice();
     vi.mocked(mockRepo.save).mockResolvedValue(savedInvoice);
 
     const useCase = new SaveInvoiceUseCase(mockRepo);
-    const dto = await useCase.execute(fixture);
+    const dto = await useCase.execute(invoice);
 
     expect(mockRepo.save).toHaveBeenCalledOnce();
     expect(dto).toBeDefined();
   });
 
-  it("passes a correctly constructed Invoice entity to repository.save()", async () => {
+  it("passes the provided Invoice entity to repository.save()", async () => {
+    const invoice = buildInvoice();
     const savedInvoice = buildInvoice();
     vi.mocked(mockRepo.save).mockResolvedValue(savedInvoice);
 
     const useCase = new SaveInvoiceUseCase(mockRepo);
-    await useCase.execute(fixture);
+    await useCase.execute(invoice);
 
     const passedInvoice = vi.mocked(mockRepo.save).mock
       .calls[0]?.[0] as Invoice;
     expect(passedInvoice).toBeInstanceOf(Invoice);
-    expect(passedInvoice.clientNumber.getValue()).toBe(fixture.clientNumber);
-    expect(passedInvoice.referenceMonth.toDisplay()).toBe(
-      fixture.referenceMonth
-    );
-    expect(passedInvoice.electricEnergyConsumption.getValue()).toBe(
-      fixture.electricEnergyConsumption
-    );
+    expect(passedInvoice).toBe(invoice);
   });
 
   it("returns a DTO with correct field values from the saved entity", async () => {
+    const invoice = buildInvoice();
     const savedInvoice = buildInvoice();
     vi.mocked(mockRepo.save).mockResolvedValue(savedInvoice);
 
     const useCase = new SaveInvoiceUseCase(mockRepo);
-    const dto = await useCase.execute(fixture);
+    const dto = await useCase.execute(invoice);
 
     expect(dto.clientNumber).toBe(fixture.clientNumber);
     expect(dto.referenceMonth).toBe(fixture.referenceMonth);
