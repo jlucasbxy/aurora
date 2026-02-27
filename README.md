@@ -94,6 +94,28 @@ Observação: quando a estratégia inclui `@@index([referenceMonth])`, o índice
 - menor pós-processamento manual;
 - estratégia de retry para falhas transitórias e tratamento explícito para rate limit.
 
+#### Escolha do modelo (custo-benefício)
+O projeto usa `claude-haiku-4-5` (configurado em `src/infrastructure/providers/claude-llm.provider.ts`) por ser uma opção mais econômica para a tarefa de extração de campos de documento, mantendo boa latência e qualidade para um caso objetivo de parsing.
+
+Em termos práticos:
+- para payloads frequentes de PDF, o custo por requisição tende a ser menor que modelos maiores;
+- a tarefa aqui é estruturada e restrita (campos definidos), o que favorece modelos mais leves;
+- modelos maiores podem melhorar robustez em casos muito ambíguos, mas com custo significativamente maior.
+
+#### Prompt de extração e "skill" do modelo
+O sistema utiliza um prompt específico no caso de uso de extração para induzir o comportamento esperado:
+- extrair apenas campos explicitamente presentes;
+- não inferir/calcular valores;
+- retornar JSON estritamente estruturado.
+
+No contexto de LLM, "skill" significa uma capacidade operacional induzida por instrução e contexto, não um módulo treinado separadamente dentro da aplicação.  
+Ou seja, a "skill de extração" é o comportamento que o modelo executa quando recebe:
+- instruções claras (prompt),
+- o documento (PDF),
+- e um formato de saída obrigatório (schema Zod via `messages.parse`).
+
+Isso reduz alucinação, melhora consistência e torna a saída validável programaticamente.
+
 ### Validação: Zod
 **Escolha:** validação de:
 - variáveis de ambiente;
