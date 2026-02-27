@@ -90,31 +90,35 @@ Observação: quando a estratégia inclui `@@index([referenceMonth])`, o índice
 **Escolha:** `@anthropic-ai/sdk` com `messages.parse` e schema Zod de saída.
 
 **Por quê:**
-- extração estruturada diretamente validada por schema;
-- menor pós-processamento manual;
-- estratégia de retry para falhas transitórias e tratamento explícito para rate limit.
+- a Anthropic oferece suporte nativo a documentos/visão (análise multimodal de PDFs) via `type: "document"`, enviando o PDF diretamente como base64 sem necessidade de conversão prévia para imagem ou extração de texto;
+- `messages.parse` com `zodOutputFormat` garante JSON Mode/Structured Output validado por schema Zod, eliminando pós-processamento manual e parsing de strings;
+- estratégia de retry (até 2 tentativas) para falhas transitórias (`APIConnectionError`, `InternalServerError`) e tratamento explícito para rate limit (`RateLimitError`).
 
-#### Escolha do modelo (custo-benefício)
-O projeto usa `claude-haiku-4-5` (configurado em `src/infrastructure/providers/claude-llm.provider.ts`) por ser uma opção mais econômica para a tarefa de extração de campos de documento, mantendo boa latência e qualidade para um caso objetivo de parsing.
+#### Escolha do modelo: `claude-haiku-4-5`
+O modelo é configurado em `src/infrastructure/providers/claude-llm.provider.ts`.
 
-Em termos práticos:
-- para payloads frequentes de PDF, o custo por requisição tende a ser menor que modelos maiores;
-- a tarefa aqui é estruturada e restrita (campos definidos), o que favorece modelos mais leves;
-- modelos maiores podem melhorar robustez em casos muito ambíguos, mas com custo significativamente maior.
+**Por que Haiku 4.5 e não um modelo maior (Sonnet/Opus)?**
+- **Custo:** Haiku é a opção mais econômica da família Claude 4.5. Para extração de campos estruturados de PDFs (tarefa objetiva e repetitiva), o custo por requisição é significativamente menor;
+- **Latência:** respostas mais rápidas, importante quando o upload do usuário bloqueia até a extração completar;
+- **Qualidade suficiente:** a tarefa é restrita (7 campos numéricos + 2 strings, todos explicitamente presentes no documento). Modelos maiores não trazem ganho perceptível para este nível de complexidade;
+- **Structured Output:** Haiku 4.5 suporta o mesmo `zodOutputFormat` que os modelos maiores, garantindo saída JSON estrita.
 
-#### Prompt de extração e "skill" do modelo
-O sistema utiliza um prompt específico no caso de uso de extração para induzir o comportamento esperado:
-- extrair apenas campos explicitamente presentes;
-- não inferir/calcular valores;
-- retornar JSON estritamente estruturado.
+Em cenários com PDFs muito ambíguos ou layouts não padronizados, um modelo maior (Sonnet) poderia melhorar robustez, mas com custo 5-10x maior por requisição.
 
-No contexto de LLM, "skill" significa uma capacidade operacional induzida por instrução e contexto, não um módulo treinado separadamente dentro da aplicação.  
-Ou seja, a "skill de extração" é o comportamento que o modelo executa quando recebe:
-- instruções claras (prompt),
-- o documento (PDF),
-- e um formato de saída obrigatório (schema Zod via `messages.parse`).
+#### Engenharia de prompt
 
-Isso reduz alucinação, melhora consistência e torna a saída validável programaticamente.
+O prompt de extração (`src/application/use-cases/invoices/extract-invoice-data.use-case.ts`) foi estruturado para maximizar precisão e minimizar alucinação:
+
+1. **Role assignment:** o modelo recebe o papel de "data extraction assistant", contextualizando a tarefa;
+2. **Regras restritivas (anti-alucinação):**
+   - "Extract ONLY information explicitly present in the document" — impede o modelo de inventar valores;
+   - "Do NOT infer, calculate, or estimate any values" — cálculos derivados (consumo total, economia GD) são feitos no backend, não pelo LLM;
+   - "If a field cannot be found, return null" — comportamento previsível para campos ausentes;
+3. **Especificação de campos:** cada campo inclui nome, descrição semântica (vinculada ao que aparece na fatura), tipo esperado (string, integer, number) e exemplo quando relevante;
+4. **Formato de mês em português:** referenceMonth usa abreviações portuguesas (JAN, FEV, MAR, ..., DEZ) no formato `MMM/YYYY`, alinhado com o padrão das faturas CEMIG;
+5. **Hint contextual:** `compensatedEnergyValue` é descrito como "usually negative", orientando o modelo a preservar o sinal negativo que aparece na fatura.
+
+A saída do prompt é então validada por um schema Zod (`InvoiceExtractionSchema`) que funciona como dupla garantia: mesmo que o modelo retorne algo inesperado, a validação programática rejeita a resposta antes de prosseguir para os cálculos de negócio.
 
 ### Validação: Zod
 **Escolha:** validação de:
