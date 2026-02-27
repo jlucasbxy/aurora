@@ -553,9 +553,3 @@ Cobertura atual do projeto (unitária) inclui:
 - value objects e entidade de domínio;
 - use cases de invoices e dashboard;
 - controllers.
-
-## Limitações conhecidas
-
-- O sucesso da extração depende da legibilidade/estrutura do PDF enviado.
-- CORS está fechado por padrão, exigindo ajuste explícito para uso por front-end web em outro domínio.
-- O fluxo de upload depende de chave Anthropic válida e saldo/limite da conta.
