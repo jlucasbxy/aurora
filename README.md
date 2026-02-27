@@ -19,7 +19,6 @@ API backend em Node.js para:
 - [Fluxo de dados](#fluxo-de-dados)
 - [Testes e qualidade](#testes-e-qualidade)
 - [Demonstração em produção](#demonstração-em-produção)
-- [Limitações conhecidas](#limitações-conhecidas)
 
 ## Tecnologias e decisões arquiteturais
 
