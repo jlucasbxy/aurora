@@ -22,7 +22,7 @@ export class ClaudeLLMProvider implements LLMProvider {
     schema: ZodType<T>
   ): Promise<T> {
     const base64Doc = document.toString("base64");
-    let _lastError: unknown;
+    let lastError: unknown;
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
@@ -54,7 +54,7 @@ export class ClaudeLLMProvider implements LLMProvider {
         });
 
         if (!response.parsed_output) {
-          _lastError = new Error("Model returned no structured output");
+          lastError = new Error("Model returned no structured output");
           continue;
         }
 
@@ -71,13 +71,14 @@ export class ClaudeLLMProvider implements LLMProvider {
           );
         }
 
-        _lastError = error;
+        lastError = error;
       }
     }
 
+    const detail = lastError instanceof Error ? `: ${lastError.message}` : "";
     throw new LlmError(
       "EXTRACTION_FAILED",
-      `Failed to extract data from document after ${MAX_ATTEMPTS} attempts`
+      `Failed to extract data from document after ${MAX_ATTEMPTS} attempts${detail}`
     );
   }
 }

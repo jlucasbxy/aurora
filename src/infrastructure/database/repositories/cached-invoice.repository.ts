@@ -99,9 +99,13 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
     const cached = await this.redis.get(key);
     if (cached) {
-      const parsed = invoiceDtoArraySchema.safeParse(JSON.parse(cached));
-      if (parsed.success) {
-        return parsed.data.map(InvoiceMapper.fromDto);
+      try {
+        const parsed = invoiceDtoArraySchema.safeParse(JSON.parse(cached));
+        if (parsed.success) {
+          return parsed.data.map(InvoiceMapper.fromDto);
+        }
+      } catch {
+        // malformed JSON, fall through to inner repo
       }
     }
 
@@ -130,16 +134,20 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
     const cached = await this.redis.get(key);
     if (cached) {
-      const parsed = energyCacheSchema.safeParse(JSON.parse(cached));
-      if (parsed.success) {
-        return {
-          electricEnergyConsumption: Quantity.reconstitute(
-            parsed.data.electricEnergyConsumption
-          ),
-          compensatedEnergy: Quantity.reconstitute(
-            parsed.data.compensatedEnergy
-          )
-        };
+      try {
+        const parsed = energyCacheSchema.safeParse(JSON.parse(cached));
+        if (parsed.success) {
+          return {
+            electricEnergyConsumption: Quantity.reconstitute(
+              parsed.data.electricEnergyConsumption
+            ),
+            compensatedEnergy: Quantity.reconstitute(
+              parsed.data.compensatedEnergy
+            )
+          };
+        }
+      } catch {
+        // malformed JSON, fall through to inner repo
       }
     }
 
@@ -165,14 +173,18 @@ export class CachedInvoiceRepository implements InvoiceRepository {
 
     const cached = await this.redis.get(key);
     if (cached) {
-      const parsed = financialCacheSchema.safeParse(JSON.parse(cached));
-      if (parsed.success) {
-        return {
-          totalValueWithoutGD: Money.reconstitute(
-            parsed.data.totalValueWithoutGD
-          ),
-          gdSavings: Money.reconstitute(parsed.data.gdSavings)
-        };
+      try {
+        const parsed = financialCacheSchema.safeParse(JSON.parse(cached));
+        if (parsed.success) {
+          return {
+            totalValueWithoutGD: Money.reconstitute(
+              parsed.data.totalValueWithoutGD
+            ),
+            gdSavings: Money.reconstitute(parsed.data.gdSavings)
+          };
+        }
+      } catch {
+        // malformed JSON, fall through to inner repo
       }
     }
 

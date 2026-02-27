@@ -16,5 +16,5 @@ const parsedEnv = envSchema.parse(process.env);
 export const env = {
   ...parsedEnv,
   ENABLE_SWAGGER:
-    parsedEnv.NODE_ENV === "development" ? false : parsedEnv.ENABLE_SWAGGER
+    parsedEnv.NODE_ENV === "production" ? false : parsedEnv.ENABLE_SWAGGER
 };
