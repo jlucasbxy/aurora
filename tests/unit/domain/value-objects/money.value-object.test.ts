@@ -14,4 +14,14 @@ describe("Money", () => {
       InvalidMoneyError
     );
   });
+
+  it("adds values with precision", () => {
+    const result = Money.create(0.1).plus(Money.create(0.2));
+    expect(result.getValue()).toBe(0.3);
+  });
+
+  it("subtracts values with precision", () => {
+    const result = Money.create(1.0).minus(Money.create(0.9));
+    expect(result.getValue()).toBe(0.1);
+  });
 });

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import Decimal from "decimal.js";
 import { InvalidMoneyError } from "@/domain/errors";
 
 const schema = z.number();
@@ -24,5 +25,13 @@ export class Money {
 
   getValue(): number {
     return this.value;
+  }
+
+  plus(other: Money): Money {
+    return new Money(new Decimal(this.value).plus(other.value).toNumber());
+  }
+
+  minus(other: Money): Money {
+    return new Money(new Decimal(this.value).minus(other.value).toNumber());
   }
 }

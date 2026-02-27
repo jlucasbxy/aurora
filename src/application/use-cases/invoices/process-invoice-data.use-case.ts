@@ -1,4 +1,3 @@
-import Decimal from "decimal.js";
 import type { InvoiceExtractionDto } from "@/application/dtos";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
@@ -10,32 +9,29 @@ import {
 
 export class ProcessInvoiceDataUseCase {
   execute(result: InvoiceExtractionDto): Invoice {
-    const electricEnergyValue = new Decimal(result.electricEnergyValue);
-    const sceeEnergyValue = new Decimal(result.sceeEnergyValue);
-    const publicLightingContrib = new Decimal(result.publicLightingContrib);
-    const compensatedEnergyValue = new Decimal(result.compensatedEnergyValue);
+    const electricEnergyValue = Money.create(result.electricEnergyValue);
+    const sceeEnergyValue = Money.create(result.sceeEnergyValue);
+    const publicLightingContrib = Money.create(result.publicLightingContrib);
+    const compensatedEnergyValue = Money.create(result.compensatedEnergyValue);
 
     return Invoice.create({
       clientNumber: ClientNumber.create(result.clientNumber),
       referenceMonth: ReferenceMonth.create(result.referenceMonth),
       electricEnergyQty: Quantity.create(result.electricEnergyQty),
-      electricEnergyValue: Money.create(electricEnergyValue.toNumber()),
+      electricEnergyValue,
       sceeEnergyQty: Quantity.create(result.sceeEnergyQty),
-      sceeEnergyValue: Money.create(sceeEnergyValue.toNumber()),
+      sceeEnergyValue,
       compensatedEnergyQty: Quantity.create(result.compensatedEnergyQty),
-      compensatedEnergyValue: Money.create(compensatedEnergyValue.toNumber()),
-      publicLightingContrib: Money.create(publicLightingContrib.toNumber()),
+      compensatedEnergyValue,
+      publicLightingContrib,
       electricEnergyConsumption: Quantity.create(
         result.electricEnergyQty + result.sceeEnergyQty
       ),
       compensatedEnergy: Quantity.create(result.compensatedEnergyQty),
-      totalValueWithoutGD: Money.create(
-        electricEnergyValue
-          .plus(sceeEnergyValue)
-          .plus(publicLightingContrib)
-          .toNumber()
-      ),
-      gdSavings: Money.create(compensatedEnergyValue.toNumber())
+      totalValueWithoutGD: electricEnergyValue
+        .plus(sceeEnergyValue)
+        .plus(publicLightingContrib),
+      gdSavings: compensatedEnergyValue
     });
   }
 }
