@@ -55,28 +55,28 @@ API backend em Node.js para:
 - os campos derivados (`totalValueWithoutGD`, `gdSavings`, consumo total) são calculados de forma determinística.
 
 ### Estratégia de índices (PostgreSQL)
-**Contexto:** consultas principais filtram por `clientNumber`, por `clientNumber + referenceMonth` e, potencialmente, por `referenceMonth` isolado.
+**Contexto:** consultas principais filtram por `clientNumber` e por `clientNumber + referenceMonth`.
 
-**Decisão técnica:**
-- índice composto `@@index([clientNumber, referenceMonth])` é o principal para consultas por cliente e por cliente+mês;
-- pela regra de **leftmost-prefix**, esse índice também atende consultas por `clientNumber` sozinho;
-- para consultas por `referenceMonth` sozinho, é necessário índice dedicado `@@index([referenceMonth])`.
+**Decisão técnica (estado atual do schema Prisma):**
+- `@@unique([clientNumber, referenceMonth])` garante regra de negócio de 1 fatura por cliente/mês e cria índice único composto;
+- `@@index([clientNumber])` acelera consultas por cliente quando o filtro não inclui `referenceMonth`;
+- não existe índice dedicado para `referenceMonth` isolado no schema atual.
 
 Tabela de cobertura:
 
 ```text
-┌───────────────────────────────┬──────────────────────────────────────────────────┐
-│            Filter             │                    Index used                    │
-├───────────────────────────────┼──────────────────────────────────────────────────┤
-│ clientNumber only             │ (clientNumber, referenceMonth) — leftmost prefix │
-├───────────────────────────────┼──────────────────────────────────────────────────┤
-│ clientNumber + referenceMonth │ (clientNumber, referenceMonth) — full match      │
-├───────────────────────────────┼──────────────────────────────────────────────────┤
-│ referenceMonth only           │ (referenceMonth)                                  │
-└───────────────────────────────┴──────────────────────────────────────────────────┘
+┌───────────────────────────────┬───────────────────────────────────────────────────────┐
+│            Filter             │                    Index/Constraint used              │
+├───────────────────────────────┼───────────────────────────────────────────────────────┤
+│ clientNumber only             │ (clientNumber)                                        │
+├───────────────────────────────┼───────────────────────────────────────────────────────┤
+│ clientNumber + referenceMonth │ UNIQUE (clientNumber, referenceMonth) — full match   │
+├───────────────────────────────┼───────────────────────────────────────────────────────┤
+│ referenceMonth only           │ sem índice específico (pode exigir varredura parcial) │
+└───────────────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
-Observação: quando a estratégia inclui `@@index([referenceMonth])`, o índice simples `@@index([clientNumber])` tende a ficar redundante, já que o composto cobre esse filtro com coluna líder em `clientNumber`.
+Observação: a migration `20260227123000_invoice_unique_client_reference_month` substituiu o índice composto não-único por um índice único composto para prevenir duplicidades de `clientNumber + referenceMonth`.
 
 ### Cache: Redis (Repository Decorator)
 **Escolha:** `ioredis` com `CachedInvoiceRepository` encapsulando o repositório Prisma.
