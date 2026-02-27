@@ -1,7 +1,18 @@
 export {};
 
 const commands: Record<string, () => Promise<void>> = {
+  "server:dev": async () => {
+    process.env.NODE_ENV ??= "development";
+    const { start } = await import("@/main/server");
+    await start();
+  },
+  "server:prod": async () => {
+    process.env.NODE_ENV ??= "production";
+    const { start } = await import("@/main/server");
+    await start();
+  },
   server: async () => {
+    process.env.NODE_ENV ??= "production";
     const { start } = await import("@/main/server");
     await start();
   }

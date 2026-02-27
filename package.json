@@ -6,17 +6,17 @@
     "node": ">=24 <25"
   },
   "scripts": {
-    "dev": "NODE_ENV=development tsx watch src/main/index.ts server",
+    "dev": "tsx watch src/main/index.ts server:dev",
     "build": "npx prisma generate && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json -f -fe .js",
-    "start": "NODE_ENV=production node dist/main/index.js server",
+    "start": "node dist/main/index.js server:prod",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "test": "NODE_ENV=test vitest run",
-    "test:watch": "NODE_ENV=test vitest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
