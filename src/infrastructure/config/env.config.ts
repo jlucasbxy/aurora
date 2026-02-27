@@ -8,7 +8,13 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   REDIS_URL: z.url(),
   ANTHROPIC_API_KEY: z.string(),
-  ENABLE_SWAGGER: z.coerce.boolean()
+  ENABLE_SWAGGER: z.coerce.boolean().default(false)
 });
 
-export const env = envSchema.parse(process.env);
+const parsedEnv = envSchema.parse(process.env);
+
+export const env = {
+  ...parsedEnv,
+  ENABLE_SWAGGER:
+    parsedEnv.NODE_ENV === "development" ? false : parsedEnv.ENABLE_SWAGGER
+};

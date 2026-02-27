@@ -164,6 +164,7 @@ Variáveis necessárias:
 | `DATABASE_URL` | Sim | `postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public` | Conexão PostgreSQL |
 | `REDIS_URL` | Sim | `redis://:lumi_cache@localhost:6379` | Conexão Redis (cache + rate-limit) |
 | `ANTHROPIC_API_KEY` | Sim | `sk-ant-...` | Chave de acesso ao Claude |
+| `ENABLE_SWAGGER` | Não (default: `false`) | `true` | Habilita Swagger fora de `development` |
 
 Exemplo (`.env`):
 
@@ -174,6 +175,7 @@ HOST=0.0.0.0
 DATABASE_URL="postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public"
 REDIS_URL="redis://:lumi_cache@localhost:6379"
 ANTHROPIC_API_KEY="your-api-key-here"
+ENABLE_SWAGGER=true
 ```
 
 > Segurança: nunca versione chaves reais. Se uma chave foi exposta, gere uma nova e revogue a anterior.
@@ -251,8 +253,8 @@ http://localhost:3000/api/v1
 Documentação OpenAPI/Swagger:
 - UI interativa: `http://localhost:3000/docs`
 - Especificação JSON: `http://localhost:3000/docs/json`
-- Comportamento padrão: habilitado fora de produção e desabilitado em produção.
-- Override: use `ENABLE_SWAGGER=true` para habilitar explicitamente.
+- Em `NODE_ENV=development`, fica sempre desabilitado (ignora `ENABLE_SWAGGER`).
+- Fora de `development`, depende de `ENABLE_SWAGGER=true`.
 
 ### 1) Upload de fatura
 
