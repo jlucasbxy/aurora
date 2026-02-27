@@ -477,6 +477,8 @@ curl "http://localhost:3000/api/v1/dashboard/1234567890/financial?dateStart=JAN/
 **Sobre o limite de upload (50 KB):**
 O valor padrão de 50 KB foi definido com base em testes com faturas reais — nenhuma ultrapassou 40 KB, então 50 KB oferece uma margem de segurança confortável. Esse limite é configurável via `MAX_FILE_SIZE_KB` porque o tamanho dos PDFs pode variar conforme a distribuidora ou o layout da fatura. Manter um limite adequado é importante do ponto de vista de segurança: restringe ataques de negação de serviço (DoS) por envio de arquivos grandes que consomem memória, banda e processamento do servidor, e reduz a superfície de exploração de payloads maliciosos embutidos em PDFs superdimensionados.
 
+Não foi utilizado S3 neste fluxo porque os arquivos têm tamanho fixo e são leves. Se os arquivos fossem maiores/pesados, o ideal seria usar upload com URL assinada e enviar essa URL para a própria IA baixar o arquivo diretamente, reduzindo overload/carga no servidor da API.
+
 Exemplo de erro de rate limit:
 
 ```json
