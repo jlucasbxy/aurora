@@ -520,6 +520,5 @@ Cobertura atual do projeto (unitária) inclui:
 ## Limitações conhecidas
 
 - O sucesso da extração depende da legibilidade/estrutura do PDF enviado.
-- Não há endpoint de healthcheck dedicado no momento.
 - CORS está fechado por padrão, exigindo ajuste explícito para uso por front-end web em outro domínio.
 - O fluxo de upload depende de chave Anthropic válida e saldo/limite da conta.
