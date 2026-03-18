@@ -17,7 +17,8 @@
     "check:fix": "biome check --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "text:coverage": "vitest run --coverage --coverage.reporter=text"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
