@@ -8,4 +8,10 @@ export interface CacheProvider {
   ): Promise<void>;
   delete(key: string): Promise<void>;
   deleteByPrefix(prefix: string): Promise<void>;
+  addTags(
+    key: string,
+    tags: string[],
+    expiresInSeconds?: number
+  ): Promise<void>;
+  deleteByTag(tag: string): Promise<void>;
 }
