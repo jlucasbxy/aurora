@@ -22,7 +22,7 @@ export class ClaudeLLMProvider implements LLMProvider {
     schema: ZodType<T>
   ): Promise<T> {
     const base64Doc = document.toString("base64");
-    let lastError: unknown;
+    let lastError: Error = new Error("Unknown extraction error");
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
@@ -71,14 +71,13 @@ export class ClaudeLLMProvider implements LLMProvider {
           );
         }
 
-        lastError = error;
+        lastError = error as Error;
       }
     }
 
-    const detail = lastError instanceof Error ? `: ${lastError.message}` : "";
     throw new LlmError(
       "EXTRACTION_FAILED",
-      `Failed to extract data from document after ${MAX_ATTEMPTS} attempts${detail}`
+      `Failed to extract data from document after ${MAX_ATTEMPTS} attempts: ${lastError.message}`
     );
   }
 }
