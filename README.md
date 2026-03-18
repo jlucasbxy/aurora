@@ -82,6 +82,15 @@ Tabela de cobertura:
 - invalidação centralizada ao salvar nova fatura;
 - sem acoplar cache à camada de aplicação/domínio.
 
+#### Validation on read (validação na leitura do cache)
+O `CachedInvoiceRepository` usa uma estratégia de **validar o dado lido do Redis antes de reutilizá-lo** (em vez de assumir que o cache sempre está consistente). Na prática:
+
+- o cache armazena **JSON** (DTO/read-model) e, ao ler, tenta fazer `JSON.parse`;
+- o resultado é validado com **Zod** (`safeParse`) usando um schema específico por tipo de entrada (lista de faturas, dashboard de energia, dashboard financeiro);
+- se o JSON estiver malformado ou **não bater com o schema** (ex.: cache corrompido, mudança de formato após deploy), o código **ignora o valor em cache** e faz fallback para o repositório interno (Prisma), regravando o cache com o formato atual.
+
+Isso evita que inconsistências de cache virem erro de runtime ou vazem dados inesperados para a API, e torna a camada de cache mais resiliente a mudanças evolutivas. Implementação: `src/infrastructure/database/repositories/cached-invoice.repository.ts`.
+
 ### Paginação: Cursor-based (Keyset)
 **Escolha:** paginação baseada em cursor utilizando o `id` (UUIDv7) como marcador.
 
