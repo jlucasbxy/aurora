@@ -53,7 +53,7 @@ export async function start() {
 
   await registerSwagger(app, {
     enabled: env.ENABLE_SWAGGER,
-    title: "Lumi Challenge API",
+    title: "Aurora Energia API",
     version: "1.0.0",
     description: "API for energy invoice upload, listing, and dashboards."
   });
