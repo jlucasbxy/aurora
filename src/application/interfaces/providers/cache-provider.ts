@@ -6,4 +6,6 @@ export interface CacheProvider {
     value: string,
     expiresInSeconds?: number
   ): Promise<void>;
+  delete(key: string): Promise<void>;
+  deleteByPrefix(prefix: string): Promise<void>;
 }
