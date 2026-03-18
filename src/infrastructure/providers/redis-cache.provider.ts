@@ -10,24 +10,23 @@ function buildTagKey(tag: string): string {
 export class RedisCacheProvider implements CacheProvider {
   constructor(private readonly redis: Redis) {}
 
-  async hget(key: string, field: string): Promise<string | null> {
-    return this.redis.hget(key, field);
+  async get(key: string): Promise<string | null> {
+    return this.redis.get(key);
   }
 
-  async hset(
+  async set(
     key: string,
-    field: string,
     value: string,
     expiresInSeconds?: number
   ): Promise<void> {
     if (expiresInSeconds == null) {
-      await this.redis.hset(key, field, value);
+      await this.redis.set(key, value);
       return;
     }
 
     const results = await this.redis
       .multi()
-      .hset(key, field, value)
+      .set(key, value)
       .expire(key, expiresInSeconds)
       .exec();
 

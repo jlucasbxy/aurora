@@ -11,7 +11,6 @@ import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { Money, Quantity } from "@/domain/value-objects";
 
 const CACHE_TTL_SECONDS = 300;
-const CACHE_VALUE_FIELD = "value";
 const CACHE_KEY_PREFIX = "cache:";
 const INVOICES_ALL_TAG = "invoices:all";
 
@@ -78,7 +77,7 @@ async function cacheThrough<TCache, TResult>(
   fetch: () => Promise<TResult>
 ): Promise<TResult> {
   const key = toCacheStorageKey(baseKey);
-  const cached = await cache.hget(key, CACHE_VALUE_FIELD);
+  const cached = await cache.get(key);
   if (cached) {
     try {
       const parsed = schema.safeParse(JSON.parse(cached));
@@ -93,9 +92,8 @@ async function cacheThrough<TCache, TResult>(
   const result = await fetch();
   if (result != null) {
     await Promise.all([
-      cache.hset(
+      cache.set(
         key,
-        CACHE_VALUE_FIELD,
         JSON.stringify(toCache(result as NonNullable<TResult>)),
         CACHE_TTL_SECONDS
       ),

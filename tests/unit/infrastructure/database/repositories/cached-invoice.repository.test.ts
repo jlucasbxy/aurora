@@ -13,8 +13,8 @@ import {
 import { CachedInvoiceRepository } from "@/infrastructure/database/repositories/cached-invoice.repository";
 
 const mockCache: CacheProvider = {
-  hget: vi.fn(),
-  hset: vi.fn(),
+  get: vi.fn(),
+  set: vi.fn(),
   delete: vi.fn(),
   deleteByPrefix: vi.fn(),
   addTags: vi.fn(),
@@ -71,7 +71,7 @@ describe("CachedInvoiceRepository", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(mockCache.hget).mockResolvedValue(null);
+    vi.mocked(mockCache.get).mockResolvedValue(null);
     repo = new CachedInvoiceRepository(mockInner, mockCache);
   });
 
@@ -82,7 +82,7 @@ describe("CachedInvoiceRepository", () => {
       const invoice = buildInvoice();
       const dto = buildInvoiceDto(invoice);
 
-      vi.mocked(mockCache.hget).mockResolvedValue(JSON.stringify([dto]));
+      vi.mocked(mockCache.get).mockResolvedValue(JSON.stringify([dto]));
 
       const result = await repo.findAll(query);
 
@@ -99,13 +99,13 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).toHaveLength(1);
       expect(mockInner.findAll).toHaveBeenCalledOnce();
-      expect(mockCache.hset).toHaveBeenCalledOnce();
+      expect(mockCache.set).toHaveBeenCalledOnce();
       expect(mockCache.addTags).toHaveBeenCalledOnce();
     });
 
     it("falls back to inner repo on malformed cache", async () => {
       const invoice = buildInvoice();
-      vi.mocked(mockCache.hget).mockResolvedValue("not-valid-json{{{");
+      vi.mocked(mockCache.get).mockResolvedValue("not-valid-json{{{");
       vi.mocked(mockInner.findAll).mockResolvedValue([invoice]);
 
       const result = await repo.findAll(query);
@@ -116,7 +116,7 @@ describe("CachedInvoiceRepository", () => {
 
     it("falls back to inner repo when cache has invalid schema", async () => {
       const invoice = buildInvoice();
-      vi.mocked(mockCache.hget).mockResolvedValue(
+      vi.mocked(mockCache.get).mockResolvedValue(
         JSON.stringify([{ bad: "data" }])
       );
       vi.mocked(mockInner.findAll).mockResolvedValue([invoice]);
@@ -149,7 +149,7 @@ describe("CachedInvoiceRepository", () => {
     const query = DashboardQuery.create({ clientNumber: "7202788900" });
 
     it("returns cached energy data on cache hit", async () => {
-      vi.mocked(mockCache.hget).mockResolvedValue(
+      vi.mocked(mockCache.get).mockResolvedValue(
         JSON.stringify({
           electricEnergyConsumption: 300,
           compensatedEnergy: 150
@@ -174,7 +174,7 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).not.toBeNull();
       expect(mockInner.aggregateEnergy).toHaveBeenCalledOnce();
-      expect(mockCache.hset).toHaveBeenCalledOnce();
+      expect(mockCache.set).toHaveBeenCalledOnce();
       expect(mockCache.addTags).toHaveBeenCalledOnce();
     });
 
@@ -184,7 +184,7 @@ describe("CachedInvoiceRepository", () => {
       const result = await repo.aggregateEnergy(query);
 
       expect(result).toBeNull();
-      expect(mockCache.hset).not.toHaveBeenCalled();
+      expect(mockCache.set).not.toHaveBeenCalled();
     });
   });
 
@@ -192,7 +192,7 @@ describe("CachedInvoiceRepository", () => {
     const query = DashboardQuery.create({ clientNumber: "7202788900" });
 
     it("returns cached financial data on cache hit", async () => {
-      vi.mocked(mockCache.hget).mockResolvedValue(
+      vi.mocked(mockCache.get).mockResolvedValue(
         JSON.stringify({ totalValueWithoutGD: 85, gdSavings: -20 })
       );
 
@@ -214,7 +214,7 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).not.toBeNull();
       expect(mockInner.aggregateFinancial).toHaveBeenCalledOnce();
-      expect(mockCache.hset).toHaveBeenCalledOnce();
+      expect(mockCache.set).toHaveBeenCalledOnce();
       expect(mockCache.addTags).toHaveBeenCalledOnce();
     });
 
@@ -224,7 +224,7 @@ describe("CachedInvoiceRepository", () => {
       const result = await repo.aggregateFinancial(query);
 
       expect(result).toBeNull();
-      expect(mockCache.hset).not.toHaveBeenCalled();
+      expect(mockCache.set).not.toHaveBeenCalled();
     });
   });
 });
