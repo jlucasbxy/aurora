@@ -1,6 +1,6 @@
-# Lumi Challenge - API de Faturas de Energia
+# Aurora Energia - API de Faturas de Energia
 
-API backend em Node.js para:
+Projeto de faculdade: API backend em Node.js para faturas da empresa **fictícia** _Aurora Energia_:
 - receber faturas de energia em PDF;
 - extrair dados estruturados com LLM (Claude/Anthropic);
 - persistir os dados em PostgreSQL;
@@ -18,7 +18,7 @@ API backend em Node.js para:
 - [Rate limit, segurança e limites](#rate-limit-segurança-e-limites)
 - [Fluxo de dados](#fluxo-de-dados)
 - [Testes e qualidade](#testes-e-qualidade)
-- [Demonstração em produção](#demonstração-em-produção)
+- [Deploy (opcional)](#deploy-opcional)
 
 ## Tecnologias e decisões arquiteturais
 
@@ -47,7 +47,7 @@ API backend em Node.js para:
 - o banco mantém consistência de cálculo financeiro em somas/agrupamentos.
 
 ### Cálculo no backend: `decimal.js`
-**Escolha:** uso de `decimal.js` em [process-invoice-data.use-case.ts](/home/jlucasbx/code/challenges/lumi-challenge/src/application/use-cases/invoices/process-invoice-data.use-case.ts).
+**Escolha:** uso de `decimal.js` em [process-invoice-data.use-case.ts](src/application/use-cases/invoices/process-invoice-data.use-case.ts).
 
 **Por quê:**
 - JavaScript `number` usa IEEE 754, podendo gerar imprecisão em operações aritméticas com decimais;
@@ -184,8 +184,8 @@ Variáveis necessárias:
 | `NODE_ENV` | Não (default: `production`) | `development` | Ambiente de execução (`development`, `test`, `production`) |
 | `PORT` | Sim | `3000` | Porta HTTP da API |
 | `HOST` | Sim | `0.0.0.0` | Host de bind do Fastify |
-| `DATABASE_URL` | Sim | `postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public` | Conexão PostgreSQL |
-| `REDIS_URL` | Sim | `redis://:lumi_cache@localhost:6379` | Conexão Redis (cache + rate-limit) |
+| `DATABASE_URL` | Sim | `postgresql://aurora:aurora@localhost:5432/aurora_db?schema=public` | Conexão PostgreSQL |
+| `REDIS_URL` | Sim | `redis://:aurora_cache@localhost:6379` | Conexão Redis (cache + rate-limit) |
 | `ANTHROPIC_API_KEY` | Sim | `sk-ant-...` | Chave de acesso ao Claude |
 | `ENABLE_SWAGGER` | Não (default: `false`) | `true` | Habilita Swagger fora de `production` |
 | `MAX_FILE_SIZE_KB` | Não (default: `50`) | `50` | Tamanho máximo de upload de arquivo em KB |
@@ -201,8 +201,8 @@ Exemplo (`.env`):
 ```dotenv
 PORT=3000
 HOST=0.0.0.0
-DATABASE_URL="postgresql://lumi:lumi@localhost:5432/lumi_db?schema=public"
-REDIS_URL="redis://:lumi_cache@localhost:6379"
+DATABASE_URL="postgresql://aurora:aurora@localhost:5432/aurora_db?schema=public"
+REDIS_URL="redis://:aurora_cache@localhost:6379"
 ANTHROPIC_API_KEY="your-api-key-here"
 ENABLE_SWAGGER=true
 MAX_FILE_SIZE_KB=50
@@ -232,7 +232,7 @@ docker compose up -d
 
 Serviços esperados:
 - PostgreSQL em `localhost:5432`
-- Redis em `localhost:6379` (senha `lumi_cache`)
+- Redis em `localhost:6379` (senha `aurora_cache`)
 
 ### 3) Aplicar migrations do banco
 
@@ -557,14 +557,14 @@ Cobertura atual do projeto (unitária) inclui:
 - use cases de invoices e dashboard;
 - controllers.
 
-## Demonstração em produção
+## Deploy (opcional)
 
-A API está hospedada no **[Railway](https://railway.com/)** e pode ser testada diretamente via `curl` ou qualquer cliente HTTP. Para testar, basta substituir `http://localhost:<PORT>` pela URL de produção nos exemplos acima.
+Se você quiser publicar a API (por exemplo, no **[Railway](https://railway.com/)**), basta substituir `http://localhost:<PORT>` pela URL do seu deploy nos exemplos acima.
 
 **Base URL:**
 
 ```text
-https://lumi-challenge-production.up.railway.app/api/v1
+https://<seu-app>.up.railway.app/api/v1
 ```
 
 ### Infraestrutura no Railway
