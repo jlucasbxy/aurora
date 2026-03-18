@@ -16,7 +16,9 @@ const mockCache: CacheProvider = {
   hget: vi.fn(),
   hset: vi.fn(),
   delete: vi.fn(),
-  deleteByPrefix: vi.fn()
+  deleteByPrefix: vi.fn(),
+  addTags: vi.fn(),
+  deleteByTag: vi.fn()
 };
 
 const mockInner: InvoiceRepository = {
@@ -98,6 +100,7 @@ describe("CachedInvoiceRepository", () => {
       expect(result).toHaveLength(1);
       expect(mockInner.findAll).toHaveBeenCalledOnce();
       expect(mockCache.hset).toHaveBeenCalledOnce();
+      expect(mockCache.addTags).toHaveBeenCalledOnce();
     });
 
     it("falls back to inner repo on malformed cache", async () => {
@@ -134,7 +137,11 @@ describe("CachedInvoiceRepository", () => {
 
       expect(mockInner.save).toHaveBeenCalledWith(invoice);
       expect(result).toBe(invoice);
-      expect(mockCache.deleteByPrefix).toHaveBeenCalledTimes(2);
+      expect(mockCache.deleteByTag).toHaveBeenCalledTimes(2);
+      expect(mockCache.deleteByTag).toHaveBeenCalledWith(
+        "invoices:client:7202788900"
+      );
+      expect(mockCache.deleteByTag).toHaveBeenCalledWith("invoices:all");
     });
   });
 
@@ -168,6 +175,7 @@ describe("CachedInvoiceRepository", () => {
       expect(result).not.toBeNull();
       expect(mockInner.aggregateEnergy).toHaveBeenCalledOnce();
       expect(mockCache.hset).toHaveBeenCalledOnce();
+      expect(mockCache.addTags).toHaveBeenCalledOnce();
     });
 
     it("returns null when inner repo returns null", async () => {
@@ -207,6 +215,7 @@ describe("CachedInvoiceRepository", () => {
       expect(result).not.toBeNull();
       expect(mockInner.aggregateFinancial).toHaveBeenCalledOnce();
       expect(mockCache.hset).toHaveBeenCalledOnce();
+      expect(mockCache.addTags).toHaveBeenCalledOnce();
     });
 
     it("returns null when inner repo returns null", async () => {

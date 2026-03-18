@@ -13,6 +13,11 @@ import { Money, Quantity } from "@/domain/value-objects";
 const CACHE_TTL_SECONDS = 300;
 const CACHE_VALUE_FIELD = "value";
 const CACHE_KEY_PREFIX = "cache:";
+const INVOICES_ALL_TAG = "invoices:all";
+
+function buildClientTag(clientNumber: string): string {
+  return `invoices:client:${clientNumber}`;
+}
 
 const invoiceDtoSchema = z.object({
   id: z.string(),
@@ -66,6 +71,7 @@ function toCacheStorageKey(baseKey: string): string {
 async function cacheThrough<TCache, TResult>(
   cache: CacheProvider,
   baseKey: string,
+  tags: string[],
   schema: z.ZodType<TCache>,
   fromCache: (data: TCache) => TResult,
   toCache: (result: NonNullable<TResult>) => TCache,
@@ -86,12 +92,15 @@ async function cacheThrough<TCache, TResult>(
 
   const result = await fetch();
   if (result != null) {
-    await cache.hset(
-      key,
-      CACHE_VALUE_FIELD,
-      JSON.stringify(toCache(result as NonNullable<TResult>)),
-      CACHE_TTL_SECONDS
-    );
+    await Promise.all([
+      cache.hset(
+        key,
+        CACHE_VALUE_FIELD,
+        JSON.stringify(toCache(result as NonNullable<TResult>)),
+        CACHE_TTL_SECONDS
+      ),
+      cache.addTags(key, tags, CACHE_TTL_SECONDS)
+    ]);
   }
   return result;
 }
@@ -103,9 +112,14 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   ) {}
 
   async findAll(query: InvoicesQuery): Promise<Invoice[]> {
+    const tags = query.clientNumber
+      ? [buildClientTag(query.clientNumber)]
+      : [INVOICES_ALL_TAG];
+
     return cacheThrough(
       this.cache,
       buildListCacheKey(query),
+      tags,
       invoiceDtoArraySchema,
       (dtos) => dtos.map(InvoiceMapper.fromDto),
       (invoices) => invoices.map(InvoiceMapper.toDto),
@@ -116,10 +130,8 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   async save(invoice: Invoice): Promise<Invoice> {
     const saved = await this.inner.save(invoice);
     await Promise.all([
-      this.cache.deleteByPrefix(
-        `${CACHE_KEY_PREFIX}invoices:${saved.clientNumber.getValue()}:`
-      ),
-      this.cache.deleteByPrefix(`${CACHE_KEY_PREFIX}invoices:all:`)
+      this.cache.deleteByTag(buildClientTag(saved.clientNumber.getValue())),
+      this.cache.deleteByTag(INVOICES_ALL_TAG)
     ]);
     return saved;
   }
@@ -127,9 +139,12 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   async aggregateEnergy(
     query: DashboardQuery
   ): Promise<InvoiceEnergyReadModel | null> {
+    const tags = [buildClientTag(query.clientNumber)];
+
     return cacheThrough(
       this.cache,
       buildDashboardCacheKey("energy", query),
+      tags,
       energyCacheSchema,
       (data) => ({
         electricEnergyConsumption: Quantity.reconstitute(
@@ -148,9 +163,12 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   async aggregateFinancial(
     query: DashboardQuery
   ): Promise<InvoiceFinancialReadModel | null> {
+    const tags = [buildClientTag(query.clientNumber)];
+
     return cacheThrough(
       this.cache,
       buildDashboardCacheKey("financial", query),
+      tags,
       financialCacheSchema,
       (data) => ({
         totalValueWithoutGD: Money.reconstitute(data.totalValueWithoutGD),
