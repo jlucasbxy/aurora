@@ -16,9 +16,7 @@ export class GetInvoicesUseCase {
 
     const hasNextPage = invoices.length > query.limit;
     const items = hasNextPage ? invoices.slice(0, query.limit) : invoices;
-    const nextCursor = hasNextPage
-      ? (items[items.length - 1]?.id ?? null)
-      : null;
+    const nextCursor = hasNextPage ? items[items.length - 1].id : null;
 
     return {
       data: items.map((invoice) => InvoiceMapper.toDto(invoice)),
