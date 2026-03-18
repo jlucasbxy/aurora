@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Invoice {
-  id                        String   @id
+  id                        String   @id @db.Uuid
   clientNumber              String
   referenceMonth            DateTime @db.Date
   electricEnergyQty         Int
