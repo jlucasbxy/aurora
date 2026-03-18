@@ -24,4 +24,12 @@ describe("ReferenceMonth", () => {
     const feb = ReferenceMonth.create("FEV/2024");
     expect(feb.toDisplay()).toBe("FEV/2024");
   });
+
+  it("reconstitutes an existing reference month", () => {
+    const date = new Date(Date.UTC(2025, 3, 1));
+    const ref = ReferenceMonth.reconstitute(date);
+
+    expect(ref.getValue()).toBe(date);
+    expect(ref.toDisplay()).toBe("ABR/2025");
+  });
 });
