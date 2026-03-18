@@ -1,5 +1,5 @@
-import type { Redis } from "ioredis";
 import { z } from "zod";
+import type { CacheProvider } from "@/application/interfaces/providers";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import { InvoiceMapper } from "@/application/mappers";
 import type {
@@ -11,6 +11,8 @@ import type { DashboardQuery, InvoicesQuery } from "@/domain/value-objects";
 import { Money, Quantity } from "@/domain/value-objects";
 
 const CACHE_TTL_SECONDS = 300;
+const CACHE_VALUE_FIELD = "value";
+const CACHE_KEY_PREFIX = "cache:";
 
 const invoiceDtoSchema = z.object({
   id: z.string(),
@@ -57,46 +59,20 @@ function buildDashboardCacheKey(
   return `invoices:${query.clientNumber}:dashboard:${type}:${dateStart}:${dateEnd}`;
 }
 
-async function invalidateCacheByPattern(
-  redis: Redis,
-  pattern: string
-): Promise<void> {
-  let cursor = "0";
-  do {
-    const [nextCursor, keys] = await redis.scan(
-      cursor,
-      "MATCH",
-      pattern,
-      "COUNT",
-      100
-    );
-    cursor = nextCursor;
-    if (keys.length > 0) {
-      await redis.unlink(...keys);
-    }
-  } while (cursor !== "0");
-}
-
-async function invalidateClientCache(
-  redis: Redis,
-  clientNumber: string
-): Promise<void> {
-  await invalidateCacheByPattern(redis, `invoices:${clientNumber}:*`);
-}
-
-async function invalidateGlobalCache(redis: Redis): Promise<void> {
-  await invalidateCacheByPattern(redis, `invoices:all:*`);
+function toCacheStorageKey(baseKey: string): string {
+  return `${CACHE_KEY_PREFIX}${baseKey}`;
 }
 
 async function cacheThrough<TCache, TResult>(
-  redis: Redis,
-  key: string,
+  cache: CacheProvider,
+  baseKey: string,
   schema: z.ZodType<TCache>,
   fromCache: (data: TCache) => TResult,
   toCache: (result: NonNullable<TResult>) => TCache,
   fetch: () => Promise<TResult>
 ): Promise<TResult> {
-  const cached = await redis.get(key);
+  const key = toCacheStorageKey(baseKey);
+  const cached = await cache.hget(key, CACHE_VALUE_FIELD);
   if (cached) {
     try {
       const parsed = schema.safeParse(JSON.parse(cached));
@@ -110,10 +86,11 @@ async function cacheThrough<TCache, TResult>(
 
   const result = await fetch();
   if (result != null) {
-    await redis.setex(
+    await cache.hset(
       key,
-      CACHE_TTL_SECONDS,
-      JSON.stringify(toCache(result as NonNullable<TResult>))
+      CACHE_VALUE_FIELD,
+      JSON.stringify(toCache(result as NonNullable<TResult>)),
+      CACHE_TTL_SECONDS
     );
   }
   return result;
@@ -122,12 +99,12 @@ async function cacheThrough<TCache, TResult>(
 export class CachedInvoiceRepository implements InvoiceRepository {
   constructor(
     private readonly inner: InvoiceRepository,
-    private readonly redis: Redis
+    private readonly cache: CacheProvider
   ) {}
 
   async findAll(query: InvoicesQuery): Promise<Invoice[]> {
     return cacheThrough(
-      this.redis,
+      this.cache,
       buildListCacheKey(query),
       invoiceDtoArraySchema,
       (dtos) => dtos.map(InvoiceMapper.fromDto),
@@ -139,8 +116,10 @@ export class CachedInvoiceRepository implements InvoiceRepository {
   async save(invoice: Invoice): Promise<Invoice> {
     const saved = await this.inner.save(invoice);
     await Promise.all([
-      invalidateClientCache(this.redis, saved.clientNumber.getValue()),
-      invalidateGlobalCache(this.redis)
+      this.cache.deleteByPrefix(
+        `${CACHE_KEY_PREFIX}invoices:${saved.clientNumber.getValue()}:`
+      ),
+      this.cache.deleteByPrefix(`${CACHE_KEY_PREFIX}invoices:all:`)
     ]);
     return saved;
   }
@@ -149,7 +128,7 @@ export class CachedInvoiceRepository implements InvoiceRepository {
     query: DashboardQuery
   ): Promise<InvoiceEnergyReadModel | null> {
     return cacheThrough(
-      this.redis,
+      this.cache,
       buildDashboardCacheKey("energy", query),
       energyCacheSchema,
       (data) => ({
@@ -170,7 +149,7 @@ export class CachedInvoiceRepository implements InvoiceRepository {
     query: DashboardQuery
   ): Promise<InvoiceFinancialReadModel | null> {
     return cacheThrough(
-      this.redis,
+      this.cache,
       buildDashboardCacheKey("financial", query),
       financialCacheSchema,
       (data) => ({

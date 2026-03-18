@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { CacheProvider } from "@/application/interfaces/providers";
 import type { InvoiceRepository } from "@/application/interfaces/repositories/invoice-repository";
 import { Invoice } from "@/domain/entities/invoice.entity";
 import {
@@ -11,11 +12,11 @@ import {
 } from "@/domain/value-objects";
 import { CachedInvoiceRepository } from "@/infrastructure/database/repositories/cached-invoice.repository";
 
-const mockRedis = {
-  get: vi.fn(),
-  setex: vi.fn(),
-  scan: vi.fn(),
-  unlink: vi.fn()
+const mockCache: CacheProvider = {
+  hget: vi.fn(),
+  hset: vi.fn(),
+  delete: vi.fn(),
+  deleteByPrefix: vi.fn()
 };
 
 const mockInner: InvoiceRepository = {
@@ -68,8 +69,8 @@ describe("CachedInvoiceRepository", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    mockRedis.scan.mockResolvedValue(["0", []]);
-    repo = new CachedInvoiceRepository(mockInner, mockRedis as never);
+    vi.mocked(mockCache.hget).mockResolvedValue(null);
+    repo = new CachedInvoiceRepository(mockInner, mockCache);
   });
 
   describe("findAll", () => {
@@ -79,7 +80,7 @@ describe("CachedInvoiceRepository", () => {
       const invoice = buildInvoice();
       const dto = buildInvoiceDto(invoice);
 
-      mockRedis.get.mockResolvedValue(JSON.stringify([dto]));
+      vi.mocked(mockCache.hget).mockResolvedValue(JSON.stringify([dto]));
 
       const result = await repo.findAll(query);
 
@@ -90,19 +91,18 @@ describe("CachedInvoiceRepository", () => {
 
     it("falls back to inner repo on cache miss", async () => {
       const invoice = buildInvoice();
-      mockRedis.get.mockResolvedValue(null);
       vi.mocked(mockInner.findAll).mockResolvedValue([invoice]);
 
       const result = await repo.findAll(query);
 
       expect(result).toHaveLength(1);
       expect(mockInner.findAll).toHaveBeenCalledOnce();
-      expect(mockRedis.setex).toHaveBeenCalledOnce();
+      expect(mockCache.hset).toHaveBeenCalledOnce();
     });
 
     it("falls back to inner repo on malformed cache", async () => {
       const invoice = buildInvoice();
-      mockRedis.get.mockResolvedValue("not-valid-json{{{");
+      vi.mocked(mockCache.hget).mockResolvedValue("not-valid-json{{{");
       vi.mocked(mockInner.findAll).mockResolvedValue([invoice]);
 
       const result = await repo.findAll(query);
@@ -113,7 +113,9 @@ describe("CachedInvoiceRepository", () => {
 
     it("falls back to inner repo when cache has invalid schema", async () => {
       const invoice = buildInvoice();
-      mockRedis.get.mockResolvedValue(JSON.stringify([{ bad: "data" }]));
+      vi.mocked(mockCache.hget).mockResolvedValue(
+        JSON.stringify([{ bad: "data" }])
+      );
       vi.mocked(mockInner.findAll).mockResolvedValue([invoice]);
 
       const result = await repo.findAll(query);
@@ -127,16 +129,12 @@ describe("CachedInvoiceRepository", () => {
     it("delegates to inner repo and invalidates cache", async () => {
       const invoice = buildInvoice();
       vi.mocked(mockInner.save).mockResolvedValue(invoice);
-      mockRedis.scan
-        .mockResolvedValueOnce(["0", ["invoices:7202788900:list:a"]])
-        .mockResolvedValueOnce(["0", ["invoices:all:list:a"]]);
-      mockRedis.unlink.mockResolvedValue(1);
 
       const result = await repo.save(invoice);
 
       expect(mockInner.save).toHaveBeenCalledWith(invoice);
       expect(result).toBe(invoice);
-      expect(mockRedis.scan).toHaveBeenCalledTimes(2);
+      expect(mockCache.deleteByPrefix).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -144,7 +142,7 @@ describe("CachedInvoiceRepository", () => {
     const query = DashboardQuery.create({ clientNumber: "7202788900" });
 
     it("returns cached energy data on cache hit", async () => {
-      mockRedis.get.mockResolvedValue(
+      vi.mocked(mockCache.hget).mockResolvedValue(
         JSON.stringify({
           electricEnergyConsumption: 300,
           compensatedEnergy: 150
@@ -160,7 +158,6 @@ describe("CachedInvoiceRepository", () => {
     });
 
     it("falls back to inner repo on cache miss", async () => {
-      mockRedis.get.mockResolvedValue(null);
       vi.mocked(mockInner.aggregateEnergy).mockResolvedValue({
         electricEnergyConsumption: Quantity.reconstitute(300),
         compensatedEnergy: Quantity.reconstitute(150)
@@ -170,17 +167,16 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).not.toBeNull();
       expect(mockInner.aggregateEnergy).toHaveBeenCalledOnce();
-      expect(mockRedis.setex).toHaveBeenCalledOnce();
+      expect(mockCache.hset).toHaveBeenCalledOnce();
     });
 
     it("returns null when inner repo returns null", async () => {
-      mockRedis.get.mockResolvedValue(null);
       vi.mocked(mockInner.aggregateEnergy).mockResolvedValue(null);
 
       const result = await repo.aggregateEnergy(query);
 
       expect(result).toBeNull();
-      expect(mockRedis.setex).not.toHaveBeenCalled();
+      expect(mockCache.hset).not.toHaveBeenCalled();
     });
   });
 
@@ -188,7 +184,7 @@ describe("CachedInvoiceRepository", () => {
     const query = DashboardQuery.create({ clientNumber: "7202788900" });
 
     it("returns cached financial data on cache hit", async () => {
-      mockRedis.get.mockResolvedValue(
+      vi.mocked(mockCache.hget).mockResolvedValue(
         JSON.stringify({ totalValueWithoutGD: 85, gdSavings: -20 })
       );
 
@@ -201,7 +197,6 @@ describe("CachedInvoiceRepository", () => {
     });
 
     it("falls back to inner repo on cache miss", async () => {
-      mockRedis.get.mockResolvedValue(null);
       vi.mocked(mockInner.aggregateFinancial).mockResolvedValue({
         totalValueWithoutGD: Money.reconstitute(85),
         gdSavings: Money.reconstitute(-20)
@@ -211,17 +206,16 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).not.toBeNull();
       expect(mockInner.aggregateFinancial).toHaveBeenCalledOnce();
-      expect(mockRedis.setex).toHaveBeenCalledOnce();
+      expect(mockCache.hset).toHaveBeenCalledOnce();
     });
 
     it("returns null when inner repo returns null", async () => {
-      mockRedis.get.mockResolvedValue(null);
       vi.mocked(mockInner.aggregateFinancial).mockResolvedValue(null);
 
       const result = await repo.aggregateFinancial(query);
 
       expect(result).toBeNull();
-      expect(mockRedis.setex).not.toHaveBeenCalled();
+      expect(mockCache.hset).not.toHaveBeenCalled();
     });
   });
 });
