@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "Invoice" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "clientNumber" TEXT NOT NULL,
     "referenceMonth" DATE NOT NULL,
     "electricEnergyQty" INTEGER NOT NULL,
@@ -20,7 +20,8 @@ CREATE TABLE "Invoice" (
 );
 
 -- CreateIndex
-CREATE INDEX "Invoice_clientNumber_idx" ON "Invoice"("clientNumber");
+CREATE INDEX "Invoice_referenceMonth_idx" ON "Invoice"("referenceMonth");
 
 -- CreateIndex
-CREATE INDEX "Invoice_clientNumber_referenceMonth_idx" ON "Invoice"("clientNumber", "referenceMonth");
+CREATE UNIQUE INDEX "Invoice_clientNumber_referenceMonth_key" ON "Invoice"("clientNumber", "referenceMonth");
+
