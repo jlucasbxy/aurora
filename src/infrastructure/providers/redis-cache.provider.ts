@@ -39,28 +39,6 @@ export class RedisCacheProvider implements CacheProvider {
     }
   }
 
-  async delete(key: string): Promise<void> {
-    await this.redis.unlink(key);
-  }
-
-  async deleteByPrefix(prefix: string): Promise<void> {
-    let cursor = "0";
-    const pattern = `${prefix}*`;
-    do {
-      const [nextCursor, keys] = await this.redis.scan(
-        cursor,
-        "MATCH",
-        pattern,
-        "COUNT",
-        100
-      );
-      cursor = nextCursor;
-      if (keys.length > 0) {
-        await this.redis.unlink(...keys);
-      }
-    } while (cursor !== "0");
-  }
-
   async addTags(
     key: string,
     tags: string[],

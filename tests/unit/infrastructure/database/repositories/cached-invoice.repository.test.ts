@@ -15,8 +15,6 @@ import { CachedInvoiceRepository } from "@/infrastructure/database/repositories/
 const mockCache: CacheProvider = {
   get: vi.fn(),
   set: vi.fn(),
-  delete: vi.fn(),
-  deleteByPrefix: vi.fn(),
   addTags: vi.fn(),
   deleteByTag: vi.fn()
 };
