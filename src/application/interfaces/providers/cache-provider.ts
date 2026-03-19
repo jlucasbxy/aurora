@@ -1,8 +1,9 @@
 export interface CacheProvider {
   get(key: string): Promise<string | null>;
   set(key: string, value: string, expiresInSeconds?: number): Promise<void>;
-  addTags(
+  setWithTags(
     key: string,
+    value: string,
     tags: string[],
     expiresInSeconds?: number
   ): Promise<void>;

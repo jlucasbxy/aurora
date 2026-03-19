@@ -15,7 +15,7 @@ import { CachedInvoiceRepository } from "@/infrastructure/database/repositories/
 const mockCache: CacheProvider = {
   get: vi.fn(),
   set: vi.fn(),
-  addTags: vi.fn(),
+  setWithTags: vi.fn(),
   deleteByTag: vi.fn()
 };
 
@@ -97,8 +97,7 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).toHaveLength(1);
       expect(mockInner.findAll).toHaveBeenCalledOnce();
-      expect(mockCache.set).toHaveBeenCalledOnce();
-      expect(mockCache.addTags).toHaveBeenCalledOnce();
+      expect(mockCache.setWithTags).toHaveBeenCalledOnce();
     });
 
     it("falls back to inner repo on malformed cache", async () => {
@@ -172,8 +171,7 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).not.toBeNull();
       expect(mockInner.aggregateEnergy).toHaveBeenCalledOnce();
-      expect(mockCache.set).toHaveBeenCalledOnce();
-      expect(mockCache.addTags).toHaveBeenCalledOnce();
+      expect(mockCache.setWithTags).toHaveBeenCalledOnce();
     });
 
     it("returns null when inner repo returns null", async () => {
@@ -182,7 +180,7 @@ describe("CachedInvoiceRepository", () => {
       const result = await repo.aggregateEnergy(query);
 
       expect(result).toBeNull();
-      expect(mockCache.set).not.toHaveBeenCalled();
+      expect(mockCache.setWithTags).not.toHaveBeenCalled();
     });
   });
 
@@ -212,8 +210,7 @@ describe("CachedInvoiceRepository", () => {
 
       expect(result).not.toBeNull();
       expect(mockInner.aggregateFinancial).toHaveBeenCalledOnce();
-      expect(mockCache.set).toHaveBeenCalledOnce();
-      expect(mockCache.addTags).toHaveBeenCalledOnce();
+      expect(mockCache.setWithTags).toHaveBeenCalledOnce();
     });
 
     it("returns null when inner repo returns null", async () => {
@@ -222,7 +219,7 @@ describe("CachedInvoiceRepository", () => {
       const result = await repo.aggregateFinancial(query);
 
       expect(result).toBeNull();
-      expect(mockCache.set).not.toHaveBeenCalled();
+      expect(mockCache.setWithTags).not.toHaveBeenCalled();
     });
   });
 });

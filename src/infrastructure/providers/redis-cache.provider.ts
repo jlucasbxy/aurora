@@ -39,14 +39,18 @@ export class RedisCacheProvider implements CacheProvider {
     }
   }
 
-  async addTags(
+  async setWithTags(
     key: string,
+    value: string,
     tags: string[],
     expiresInSeconds?: number
   ): Promise<void> {
-    if (tags.length === 0) return;
-
     const pipeline = this.redis.multi();
+    pipeline.set(key, value);
+    if (expiresInSeconds != null) {
+      pipeline.expire(key, expiresInSeconds);
+    }
+
     for (const tag of tags) {
       const tagKey = buildTagKey(tag);
       pipeline.sadd(tagKey, key);

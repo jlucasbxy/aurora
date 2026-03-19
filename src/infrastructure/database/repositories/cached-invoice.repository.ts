@@ -91,14 +91,12 @@ async function cacheThrough<TCache, TResult>(
 
   const result = await fetch();
   if (result != null) {
-    await Promise.all([
-      cache.set(
-        key,
-        JSON.stringify(toCache(result as NonNullable<TResult>)),
-        CACHE_TTL_SECONDS
-      ),
-      cache.addTags(key, tags, CACHE_TTL_SECONDS)
-    ]);
+    await cache.setWithTags(
+      key,
+      JSON.stringify(toCache(result as NonNullable<TResult>)),
+      tags,
+      CACHE_TTL_SECONDS
+    );
   }
   return result;
 }
