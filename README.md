@@ -1,6 +1,6 @@
 # Aurora Energia - API de Faturas de Energia
 
-Projeto de faculdade: API backend em Node.js para faturas da empresa **fictícia** _Aurora Energia_:
+API backend em Node.js para faturas da empresa **fictícia** _Aurora Energia_:
 - receber faturas de energia em PDF;
 - extrair dados estruturados com LLM (Claude/Anthropic);
 - persistir os dados em PostgreSQL;
